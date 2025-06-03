@@ -21,14 +21,11 @@ const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
       order: 1,
       estimatedTimeMinutes: 20,
       vocabulary: [
-        { term: "Díná lâm na ...", translation: "My name is ...", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "name introduction" },
         { term: "mônè", translation: "hello, hi", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting hello" },
-        { term: "bobe", translation: "bad", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "emotion bad" },
-        { term: "bwâm", translation: "good, well", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "emotion good" },
         { term: "idibà á bwâm e", translation: "good morning", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting morning" },
         { term: "na sôm", translation: "thanks, thank you", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting thanks" },
         { term: "na oa pé", translation: "you too", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "phrase youtoo" },
-        { term: "é titi lambo", translation: "don't mention it", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "phrase welcome" },
+        { term: "é titi lambo", translation: "don't mention it / you're welcome", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "phrase welcome" },
         { term: "na má àlà", translation: "goodbye, bye", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting goodbye" },
         { term: "buna bópépe", translation: "see you later", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting later" },
         { term: "É ma ala nê ?", translation: "How are you?", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting howareyou" },
@@ -37,12 +34,15 @@ const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
         { term: "Tô lambo lá pena", translation: "Nothing new", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "phrase nothingnew" },
         { term: "ee", translation: "yes", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "word yes" },
         { term: "kèm", translation: "no", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "word no" },
+        { term: "Díná lâm na ...", translation: "My name is ...", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "name introduction" },
+        { term: "bobe", translation: "bad", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "emotion bad" },
+        { term: "bwâm", translation: "good, well", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "emotion good" },
       ],
       dialogues: [
         { speaker: "Muna", line: "mônè, Sango!" },
         { speaker: "Sango", line: "mônè, Muna! É ma ala nê ?" },
-        { speaker: "Muna", line: "É ma ala, na sôm. Na wa e?" },
-        { speaker: "Sango", line: "É ma ala buki." },
+        { speaker: "Muna", line: "É ma ala, na sôm. Na wa e?" }, // Assuming 'Na wa e?' means 'And you?'
+        { speaker: "Sango", line: "É ma ala buki." }, // Assuming 'buki' means 'very well' or similar
       ],
       culturalTips: "Greetings are very important in Cameroonian culture. Always greet elders with respect. Using titles like 'Sango' (Mr./Sir) or 'Ngo' (Ms./Madam) shows respect.",
       youtubeVideoUrl: "https://youtu.be/VV9gq-XwA-E" 
@@ -60,6 +60,51 @@ const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
         { term: "ŋ", translation: "Velar nasal (like 'ng' in 'sing')", dataAiHint: "alphabet letter" },
       ],
       culturalTips: "Duala is a tonal language, meaning the pitch of a syllable can change its meaning. Pay close attention to tone marks (e.g., M̀bɔ́lɔ vs. Mbɔlɔ)."
+    },
+    { 
+      id: "3", 
+      title: "Ordering Food in Duala", 
+      description: "Essential phrases for restaurants.", 
+      category: "Dialogues", 
+      order: 3,
+      estimatedTimeMinutes: 20,
+      dialogues: [
+        { speaker: "Customer", line: "M̀bɔ́lɔ, na me̠nde̠ sombo bia." }, // Hello, I want to order food.
+        { speaker: "Waiter", line: "M̀bɔ́lɔ, nje o me̠nde̠ e?" } // Hello, what will you have?
+      ]
+    },
+    { 
+      id: "4", 
+      title: "Mbia - Family - La famille", 
+      description: "Learn Duala terms for family members.", 
+      category: "Vocabulary", 
+      estimatedTimeMinutes: 18, 
+      order: 4,
+      vocabulary: [
+        { term: "pambambÄ", translation: "grandfather", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family grandfather" },
+        { term: "mambambÄ", translation: "grandmother", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family grandmother" },
+        { term: "tetÄ, te, sango, papa", translation: "father, dad", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family father" },
+        { term: "yeye, iyo, ñango, mama", translation: "mother, mom", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family mother" },
+        { term: "moto, mumi", translation: "man, husband", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family husband" },
+        { term: "muto", translation: "woman, wife, spouse", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family wife" },
+        { term: "mola", translation: "uncle", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family uncle" },
+        { term: "insadi, sita, tanti", translation: "aunt", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family aunt" },
+        { term: "mulalo", translation: "cousin", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family cousin" },
+        { term: "ndomÄ", translation: "brother", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family brother" },
+        { term: "ndoma muto", translation: "sister", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family sister" },
+        { term: "diwása", translation: "twin", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family twin" },
+        { term: "muna", translation: "child", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family child" },
+        { term: "mwÄ ngÄ mwa muna", translation: "baby", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "family baby" },
+      ]
+    },
+    { 
+      id: "5", 
+      title: "Cultural Etiquette in Cameroon", 
+      description: "Understand important cultural norms.", 
+      category: "Culture", 
+      estimatedTimeMinutes: 30, 
+      order: 5,
+      culturalTips: "Greetings are very important. Always greet elders first. When visiting someone's home, it's customary to bring a small gift. Handshakes are common, but maintain eye contact respectfully, especially with elders. Pointing with an index finger can be considered rude."
     },
   ];
   return lessons.find(l => l.id === lessonId) || null;
@@ -80,6 +125,7 @@ const getLessonQuiz = async (lessonId: string): Promise<Quiz | null> => {
       ]
     };
   }
+  // Add quiz for lesson 4 (Family) later if needed
   return null;
 }
 
@@ -99,13 +145,15 @@ const getYouTubeEmbedUrl = (videoUrl: string): string => {
     }
   } catch (e) {
     console.error("Invalid YouTube URL passed to getYouTubeEmbedUrl:", videoUrl, e);
+    // Fallback for cases where videoUrl might just be the ID
     if (/^[a-zA-Z0-9_-]{11}$/.test(videoUrl)) { 
         return `https://www.youtube.com/embed/${videoUrl}`;
     }
-    return 'about:blank'; 
+    return 'about:blank'; // Invalid URL, return blank page
   }
 
   if (videoId) {
+    // Remove query parameters from videoId if present (e.g. from youtu.be/VIDEO_ID?si=...)
     const queryIndex = videoId.indexOf('?');
     if (queryIndex !== -1) {
       videoId = videoId.substring(0, queryIndex);
@@ -114,14 +162,14 @@ const getYouTubeEmbedUrl = (videoUrl: string): string => {
   }
   
   console.warn("Could not extract YouTube video ID from URL:", videoUrl);
-  return 'about:blank'; 
+  return 'about:blank'; // Could not extract ID, return blank page
 };
 
 
 const YouTubeEmbed = ({ videoUrl }: { videoUrl: string }) => {
   const embedSrc = getYouTubeEmbedUrl(videoUrl);
   if (embedSrc === 'about:blank') {
-    return <div className="aspect-video bg-muted flex items-center justify-center rounded-lg shadow-lg my-4 text-destructive-foreground">Could not load video.</div>;
+    return <div className="aspect-video bg-muted flex items-center justify-center rounded-lg shadow-lg my-4 text-destructive-foreground">Could not load video. Check URL.</div>;
   }
   return (
     <div className="aspect-video overflow-hidden rounded-lg shadow-lg my-4" data-ai-hint="language lesson video">
@@ -163,7 +211,7 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
           )}
         </CardHeader>
         
-        <ScrollArea className="h-[calc(100vh-20rem)]"> 
+        <ScrollArea className="h-[calc(100vh-20rem)]"> {/* Adjust height as needed */}
           <CardContent className="pt-6 space-y-6">
             {lesson.youtubeVideoUrl && <YouTubeEmbed videoUrl={lesson.youtubeVideoUrl} />}
 

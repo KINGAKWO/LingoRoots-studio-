@@ -16,7 +16,7 @@ const lessons: Lesson[] = [
     category: "Vocabulary", 
     estimatedTimeMinutes: 20, 
     order: 1,
-    vocabulary: [ // Summary vocabulary for display on this page
+    vocabulary: [ 
       { term: "mônè", translation: "hello, hi" },
       { term: "na sôm", translation: "thank you" },
       { term: "É ma ala nê ?", translation: "How are you?" }
@@ -44,11 +44,17 @@ const lessons: Lesson[] = [
   },
   { 
     id: "4", 
-    title: "Family Members", 
-    description: "Learn how to talk about your family.", 
+    title: "Mbia - Family - La famille", 
+    description: "Learn Duala terms for family members.", 
     category: "Vocabulary", 
     estimatedTimeMinutes: 18, 
-    order: 4 
+    order: 4,
+    vocabulary: [
+        { term: "pambambÄ", translation: "grandfather" },
+        { term: "mambambÄ", translation: "grandmother" },
+        { term: "tetÄ", translation: "father, dad" },
+        { term: "yeye", translation: "mother, mom" },
+    ]
   },
   { 
     id: "5", 
@@ -73,6 +79,7 @@ export default function LessonsPage() {
         {lessons.map((lesson) => (
           <Card key={lesson.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
              <div className="relative h-40 w-full bg-secondary/20 flex items-center justify-center" data-ai-hint={`lesson ${lesson.category?.toLowerCase()} abstract`}>
+                {/* Placeholder Image or Icon */}
                 <BookOpenText className="w-16 h-16 text-primary/50" />
              </div>
             <CardHeader className="pb-3">
