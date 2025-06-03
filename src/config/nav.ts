@@ -1,11 +1,17 @@
+
 import type { NavItem } from "@/types";
-import { LayoutGrid, BookOpenText, HelpCircle, Award, DatabaseZap, User, Settings, Globe, Users } from "lucide-react";
+import { LayoutGrid, BookOpenText, HelpCircle, Award, DatabaseZap, User, Settings, Globe, Users, LanguagesIcon } from "lucide-react";
 
 export const mainNavItems: NavItem[] = [
   {
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutGrid,
+  },
+  {
+    title: "Select Language",
+    href: "/select-language",
+    icon: LanguagesIcon, // Using LanguagesIcon, ensure it's a valid Lucide icon or import appropriately
   },
   {
     title: "Lessons",
