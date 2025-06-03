@@ -83,19 +83,60 @@ const getLessonQuiz = async (lessonId: string): Promise<Quiz | null> => {
   return null;
 }
 
-const YouTubeEmbed = ({ embedUrl }: { embedUrl: string }) => (
-  <div className="aspect-video overflow-hidden rounded-lg shadow-lg my-4" data-ai-hint="language lesson video">
-    <iframe
-      width="100%"
-      height="100%"
-      src={embedUrl.replace("watch?v=", "embed/")} 
-      title="YouTube video player"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowFullScreen
-    ></iframe>
-  </div>
-);
+const getYouTubeEmbedUrl = (videoUrl: string): string => {
+  let videoId: string | null = null;
+  try {
+    const urlObj = new URL(videoUrl);
+    
+    if (urlObj.hostname === 'youtu.be') {
+      videoId = urlObj.pathname.substring(1); 
+    } else if (urlObj.hostname === 'www.youtube.com' || urlObj.hostname === 'youtube.com') {
+      if (urlObj.pathname === '/watch') {
+        videoId = urlObj.searchParams.get('v');
+      } else if (urlObj.pathname.startsWith('/embed/')) {
+        videoId = urlObj.pathname.substring('/embed/'.length);
+      }
+    }
+  } catch (e) {
+    console.error("Invalid YouTube URL passed to getYouTubeEmbedUrl:", videoUrl, e);
+    if (/^[a-zA-Z0-9_-]{11}$/.test(videoUrl)) { 
+        return `https://www.youtube.com/embed/${videoUrl}`;
+    }
+    return 'about:blank'; 
+  }
+
+  if (videoId) {
+    const queryIndex = videoId.indexOf('?');
+    if (queryIndex !== -1) {
+      videoId = videoId.substring(0, queryIndex);
+    }
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  
+  console.warn("Could not extract YouTube video ID from URL:", videoUrl);
+  return 'about:blank'; 
+};
+
+
+const YouTubeEmbed = ({ videoUrl }: { videoUrl: string }) => {
+  const embedSrc = getYouTubeEmbedUrl(videoUrl);
+  if (embedSrc === 'about:blank') {
+    return <div className="aspect-video bg-muted flex items-center justify-center rounded-lg shadow-lg my-4 text-destructive-foreground">Could not load video.</div>;
+  }
+  return (
+    <div className="aspect-video overflow-hidden rounded-lg shadow-lg my-4" data-ai-hint="language lesson video">
+      <iframe
+        width="100%"
+        height="100%"
+        src={embedSrc}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      ></iframe>
+    </div>
+  );
+};
 
 export default async function LessonDetailsPage({ params }: { params: { lessonId: string } }) {
   const lesson = await getLessonDetails(params.lessonId);
@@ -124,7 +165,7 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
         
         <ScrollArea className="h-[calc(100vh-20rem)]"> 
           <CardContent className="pt-6 space-y-6">
-            {lesson.youtubeVideoUrl && <YouTubeEmbed embedUrl={lesson.youtubeVideoUrl} />}
+            {lesson.youtubeVideoUrl && <YouTubeEmbed videoUrl={lesson.youtubeVideoUrl} />}
 
             {lesson.vocabulary && lesson.vocabulary.length > 0 && (
               <section>
