@@ -1,11 +1,13 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Globe } from "lucide-react";
+import type { Language } from "@/types"; // Import the new Language type
 
 // Mock data - replace with actual data fetching later
-const languages = [
-  { id: "1", name: "Duala", code: "dua", status: "Active", lessonCount: 5 },
-  { id: "2", name: "Ewondo", code: "ewo", status: "Inactive", lessonCount: 0 },
+const languages: Language[] = [
+  { id: "dua", name: "Duala", description: "A Bantu language spoken in Cameroon.", imageUrl: "https://placehold.co/50x50.png", isActive: true, lessonCount: 5 },
+  { id: "ewo", name: "Ewondo", description: "Another Bantu language from Cameroon.", imageUrl: "https://placehold.co/50x50.png", isActive: false, lessonCount: 0 },
 ];
 
 export default function LanguageManagementPage() {
@@ -33,7 +35,7 @@ export default function LanguageManagementPage() {
                 <thead className="bg-muted/50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Code</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">ID (Code)</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Lessons</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
@@ -43,10 +45,10 @@ export default function LanguageManagementPage() {
                   {languages.map(lang => (
                     <tr key={lang.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{lang.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{lang.code}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{lang.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${lang.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                          {lang.status}
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${lang.isActive ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {lang.isActive ? 'Active' : 'Inactive'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{lang.lessonCount}</td>

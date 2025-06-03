@@ -1,24 +1,59 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle, MessageSquareHeart } from "lucide-react";
-import type { Lesson, Quiz } from "@/types";
+import { ArrowLeft, CheckCircle, Youtube, Volume2, BookOpen, Lightbulb } from "lucide-react";
+import type { Lesson, Quiz, VocabularyItem, DialogueLine } from "@/types";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 // Mock data - replace with actual data fetching
 const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
-  // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 200));
   const lessons: Lesson[] = [
-    { id: "1", title: "Basic Duala Greetings", description: "Learn common greetings and introductions such as 'Bonjour', 'Bonsoir', 'Comment vas-tu?', and their replies.", category: "Vocabulary", content: "# Duala Greetings\n\nHello - *M̀bɔ́lɔ*\n\nGood morning - *M̀bɔ́lɔ ní Mbatan*\n\nHow are you? - *Ko̠ o pɛlɛpɛlɛ e?*\n\nI am fine - *Na pɛlɛpɛlɛ*\n\nThank you - *Na som*\n\n## Dialogue Example\n\nMuna: M̀bɔ́lɔ, Sango!\n\nSango: M̀bɔ́lɔ, Muna! Ko̠ o pɛlɛpɛlɛ e?\n\nMuna: Na pɛlɛpɛlɛ, na som. Na wa e?\n\nSango: Na pɛlɛpɛlɛ buki.\n\n## Cultural Insight\n\nGreetings are very important in Cameroonian culture. Always greet elders with respect.", estimatedTimeMinutes: 15, order: 1, icon: "https://placehold.co/800x400.png"},
-    { id: "2", title: "Duala Alphabet and Pronunciation", description: "Master the sounds of Duala.", category: "Fundamentals", content: "# Duala Alphabet\n\nThis lesson covers the Duala alphabet and pronunciation rules...\n(Content based on duala.douala.free.fr)", estimatedTimeMinutes: 25, order: 2, icon: "https://placehold.co/800x400.png" },
+    { 
+      id: "1", 
+      title: "Basic Duala Greetings", 
+      description: "Learn common greetings and introductions such as 'Bonjour', 'Bonsoir', 'Comment vas-tu?', and their replies.", 
+      category: "Vocabulary", 
+      order: 1,
+      estimatedTimeMinutes: 15,
+      vocabulary: [
+        { term: "M̀bɔ́lɔ", translation: "Hello", example: "M̀bɔ́lɔ, Sango! (Hello, Sango!)" },
+        { term: "M̀bɔ́lɔ ní Mbatan", translation: "Good morning" },
+        { term: "Ko̠ o pɛlɛpɛlɛ e?", translation: "How are you?" },
+        { term: "Na pɛlɛpɛlɛ", translation: "I am fine" },
+        { term: "Na som", translation: "Thank you", example: "Na som buki (Thank you very much)" },
+      ],
+      dialogues: [
+        { speaker: "Muna", line: "M̀bɔ́lɔ, Sango!" },
+        { speaker: "Sango", line: "M̀bɔ́lɔ, Muna! Ko̠ o pɛlɛpɛlɛ e?" },
+        { speaker: "Muna", line: "Na pɛlɛpɛlɛ, na som. Na wa e?" },
+        { speaker: "Sango", line: "Na pɛlɛpɛlɛ buki." },
+      ],
+      culturalTips: "Greetings are very important in Cameroonian culture. Always greet elders with respect, often by bowing slightly or avoiding direct eye contact initially. Using titles like 'Sango' (Mr./Sir) or 'Ngo' (Ms./Madam) shows respect.",
+      youtubeVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" // Example placeholder
+    },
+    { 
+      id: "2", 
+      title: "Duala Alphabet and Pronunciation", 
+      description: "Master the sounds of Duala, including special characters and tones.", 
+      category: "Fundamentals", 
+      order: 2,
+      estimatedTimeMinutes: 25,
+      vocabulary: [
+        { term: "ɓ", translation: "Voiced bilabial implosive (like 'b' in 'buy' but imploded)"},
+        { term: "ɛ", translation: "Open-mid front unrounded vowel (like 'e' in 'bet')"},
+        { term: "ŋ", translation: "Velar nasal (like 'ng' in 'sing')"},
+      ],
+      culturalTips: "Duala is a tonal language, meaning the pitch of a syllable can change its meaning. Pay close attention to tone marks (e.g., M̀bɔ́lɔ vs. Mbɔlɔ)."
+    },
   ];
   return lessons.find(l => l.id === lessonId) || null;
 };
 
 const getLessonQuiz = async (lessonId: string): Promise<Quiz | null> => {
-   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 200));
   if (lessonId === "1") {
     return {
@@ -26,14 +61,27 @@ const getLessonQuiz = async (lessonId: string): Promise<Quiz | null> => {
       lessonId: "1",
       title: "Greetings Quiz",
       questions: [
-        { id: "q1", questionText: "How do you say 'Hello' in Duala?", options: ["M̀bɔ́lɔ", "Na som", "Pɛlɛpɛlɛ"], correctAnswer: "M̀bɔ́lɔ", points: 10 },
-        { id: "q2", questionText: "What does 'Na som' mean?", options: ["Goodbye", "Thank you", "Yes"], correctAnswer: "Thank you", points: 10 },
+        { id: "q1", text: "How do you say 'Hello' in Duala?", type: "multiple-choice", options: ["M̀bɔ́lɔ", "Na som", "Pɛlɛpɛlɛ"], correctAnswer: "M̀bɔ́lɔ", points: 10 },
+        { id: "q2", text: "What does 'Na som' mean?", type: "multiple-choice", options: ["Goodbye", "Thank you", "Yes"], correctAnswer: "Thank you", points: 10 },
       ]
     };
   }
   return null;
 }
 
+const YouTubeEmbed = ({ embedUrl }: { embedUrl: string }) => (
+  <div className="aspect-video overflow-hidden rounded-lg shadow-lg my-4" data-ai-hint="youtube video player">
+    <iframe
+      width="100%"
+      height="100%"
+      src={embedUrl.replace("watch?v=", "embed/")} // Ensure it's an embeddable URL
+      title="YouTube video player"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowFullScreen
+    ></iframe>
+  </div>
+);
 
 export default async function LessonDetailsPage({ params }: { params: { lessonId: string } }) {
   const lesson = await getLessonDetails(params.lessonId);
@@ -43,23 +91,6 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
     return <div className="text-center py-10">Lesson not found.</div>;
   }
 
-  // A simple markdown parser (very basic, for demonstration)
-  const renderContent = (content: string) => {
-    return content.split('\n\n').map((paragraph, pIdx) => (
-      <p key={pIdx} className="mb-4 text-foreground/90">
-        {paragraph.split('\n').map((line, lIdx) => {
-          if (line.startsWith('# ')) return <h1 key={lIdx} className="text-2xl font-bold mt-4 mb-2 text-primary font-headline">{line.substring(2)}</h1>;
-          if (line.startsWith('## ')) return <h2 key={lIdx} className="text-xl font-semibold mt-3 mb-1 text-primary/90 font-headline">{line.substring(3)}</h2>;
-          if (line.startsWith('### ')) return <h3 key={lIdx} className="text-lg font-semibold mt-2 mb-1 text-primary/80 font-headline">{line.substring(4)}</h3>;
-          // Basic bold/italic
-          line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
-          return <span key={lIdx} dangerouslySetInnerHTML={{ __html: line }} className="block" />;
-        })}
-      </p>
-    ));
-  };
-
   return (
     <div className="space-y-6">
       <Link href="/lessons" className="inline-flex items-center text-sm text-accent hover:underline mb-4">
@@ -68,48 +99,97 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
       </Link>
 
       <Card className="shadow-xl overflow-hidden">
-        {lesson.icon && (
-          <div className="relative h-64 w-full bg-muted" data-ai-hint="language study culture">
-             <Image src={lesson.icon} alt={lesson.title} layout="fill" objectFit="cover" />
-          </div>
-        )}
+        {/* No lesson-specific icon/image at the top as per new schema */}
+        {/* Instead, a YouTube video might be embedded in the content if available */}
         <CardHeader className="border-b">
           <CardTitle className="text-3xl font-bold text-primary font-headline">{lesson.title}</CardTitle>
           {lesson.category && <Badge variant="outline" className="mt-2 w-fit">{lesson.category}</Badge>}
           <CardDescription className="pt-2">{lesson.description}</CardDescription>
+           {lesson.estimatedTimeMinutes && (
+            <p className="text-xs text-muted-foreground pt-1">Estimated time: {lesson.estimatedTimeMinutes} minutes</p>
+          )}
         </CardHeader>
-        <CardContent className="pt-6 prose prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-strong:text-foreground/90 prose-em:text-foreground/80">
-          {renderContent(lesson.content)}
-        </CardContent>
+        
+        <ScrollArea className="h-[calc(100vh-20rem)]"> {/* Adjust height as needed */}
+          <CardContent className="pt-6 space-y-6">
+            {lesson.youtubeVideoUrl && <YouTubeEmbed embedUrl={lesson.youtubeVideoUrl} />}
+
+            {lesson.vocabulary && lesson.vocabulary.length > 0 && (
+              <section>
+                <h2 className="text-2xl font-semibold mb-3 text-primary/90 font-headline flex items-center">
+                  <BookOpen className="mr-2 h-6 w-6"/> Vocabulary
+                </h2>
+                <div className="space-y-2">
+                  {lesson.vocabulary.map((item, index) => (
+                    <Card key={index} className="p-4 bg-card hover:bg-muted/30 transition-colors">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold text-lg text-foreground">{item.term}</p>
+                          <p className="text-muted-foreground">{item.translation}</p>
+                        </div>
+                        {item.audioUrl && <Button variant="ghost" size="icon"><Volume2 className="h-5 w-5 text-accent"/></Button>}
+                      </div>
+                      {item.example && <p className="text-sm text-foreground/80 mt-1"><em>Example: {item.example}</em></p>}
+                       {item.imageUrl && <img src={item.imageUrl} alt={item.term} className="mt-2 rounded max-h-32" data-ai-hint="vocabulary illustration"/>}
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {lesson.dialogues && lesson.dialogues.length > 0 && (
+              <section>
+                <Separator className="my-6"/>
+                <h2 className="text-2xl font-semibold mb-3 text-primary/90 font-headline">Dialogues</h2>
+                <div className="space-y-4">
+                  {lesson.dialogues.map((dialogue, index) => (
+                    <div key={index} className="p-3 border rounded-md bg-card">
+                      <p className="font-medium text-sm text-primary">{dialogue.speaker}:</p>
+                      <p className="text-foreground/90">{dialogue.line}</p>
+                       {dialogue.audioUrl && <Button variant="ghost" size="sm" className="mt-1 text-accent"><Volume2 className="mr-1 h-4 w-4"/> Listen</Button>}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {lesson.culturalTips && (
+              <section>
+                <Separator className="my-6"/>
+                <h2 className="text-2xl font-semibold mb-3 text-primary/90 font-headline flex items-center">
+                  <Lightbulb className="mr-2 h-6 w-6"/> Cultural Insights
+                </h2>
+                <div className="p-4 bg-secondary/30 rounded-md border border-accent/50">
+                  <p className="text-foreground/90 whitespace-pre-line">{lesson.culturalTips}</p>
+                </div>
+              </section>
+            )}
+          </CardContent>
+        </ScrollArea>
       </Card>
       
-      {/* Placeholder for interactive elements if any */}
-      {/* E.g. vocabulary cards, audio pronunciation, dialogues */}
-
-      <div className="mt-8 p-6 bg-secondary/30 rounded-lg shadow">
-        <h2 className="text-2xl font-semibold mb-4 text-primary font-headline">Reinforce Your Learning</h2>
-        <p className="text-muted-foreground mb-4">
-          Practice what you've learned with a quick quiz or review key vocabulary.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4">
-          {quiz ? (
-            <Link href={`/quizzes/${quiz.id}`} passHref>
-              <Button variant="default" size="lg" className="flex-1 sm:flex-none">
-                <CheckCircle className="mr-2 h-5 w-5" />
-                Take Quiz: {quiz.title}
-              </Button>
-            </Link>
-          ) : (
-            <Button variant="outline" size="lg" disabled className="flex-1 sm:flex-none">
-              Quiz Coming Soon
-            </Button>
-          )}
-          {/* <Button variant="outline" size="lg" className="flex-1 sm:flex-none">
-            <MessageSquareHeart className="mr-2 h-5 w-5" />
-            Practice Vocabulary (Coming Soon)
-          </Button> */}
+      <CardFooter className="mt-8 p-6 bg-secondary/30 rounded-lg shadow">
+        <div>
+            <h2 className="text-2xl font-semibold mb-4 text-primary font-headline">Reinforce Your Learning</h2>
+            <p className="text-muted-foreground mb-4">
+            Practice what you've learned with a quick quiz or review key vocabulary.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+            {quiz ? (
+                <Link href={`/quizzes/${quiz.id}`} passHref>
+                <Button variant="default" size="lg" className="flex-1 sm:flex-none">
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                    Take Quiz: {quiz.title}
+                </Button>
+                </Link>
+            ) : (
+                <Button variant="outline" size="lg" disabled className="flex-1 sm:flex-none">
+                Quiz Coming Soon
+                </Button>
+            )}
+            </div>
         </div>
-      </div>
+      </CardFooter>
     </div>
   );
 }

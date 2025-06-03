@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Quiz, Question as QuestionType } from "@/types";
@@ -18,7 +19,7 @@ interface QuizEngineProps {
 
 export function QuizEngine({ quizData }: QuizEngineProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] useState<string | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,9 +52,9 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
     setIsFeedbackLoading(true);
     try {
       const feedbackInput: QuizFeedbackInput = {
-        question: currentQuestion.questionText,
+        question: currentQuestion.text, // Updated from questionText
         answer: selectedAnswer,
-        correctAnswer: currentQuestion.correctAnswer,
+        correctAnswer: currentQuestion.correctAnswer as string, // Assuming string for now
       };
       const aiResult = await quizFeedback(feedbackInput);
       setFeedback(aiResult.feedback);
@@ -62,7 +63,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
       setFeedback("Could not retrieve AI feedback at this time.");
     } finally {
       setIsFeedbackLoading(false);
-      setIsSubmitting(false); // Moved here
+      setIsSubmitting(false); 
     }
   };
 
@@ -87,8 +88,9 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
   };
 
   if (showResult) {
-    const percentage = (score / quizData.questions.reduce((acc, q) => acc + q.points, 0)) * 100;
-    const passed = quizData.passingScore ? percentage >= quizData.passingScore : true; // Assume pass if no passingScore
+    const totalPointsPossible = quizData.questions.reduce((acc, q) => acc + q.points, 0);
+    const percentage = totalPointsPossible > 0 ? (score / totalPointsPossible) * 100 : 0;
+    const passed = quizData.passingScore ? percentage >= quizData.passingScore : true; 
 
     return (
       <Card className="w-full max-w-2xl mx-auto shadow-xl">
@@ -98,7 +100,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-4xl font-bold">
-            Your Score: {score} / {quizData.questions.reduce((acc, q) => acc + q.points, 0)} ({percentage.toFixed(0)}%)
+            Your Score: {score} / {totalPointsPossible} ({percentage.toFixed(0)}%)
           </p>
           {passed ? (
             <Alert variant="default" className="bg-green-50 border-green-500 text-green-700">
@@ -136,26 +138,31 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
         <Progress value={progressValue} className="w-full mt-2 h-2" />
       </CardHeader>
       <CardContent className="space-y-6">
-        <p className="text-lg font-semibold text-foreground">{currentQuestion.questionText}</p>
-        <RadioGroup
-          onValueChange={setSelectedAnswer}
-          value={selectedAnswer || ""}
-          disabled={isSubmitting || !!answerStatus}
-          className="space-y-2"
-        >
-          {currentQuestion.options.map((option, index) => (
-            <div key={index} className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted/50 transition-colors has-[[data-state=checked]]:bg-accent has-[[data-state=checked]]:text-accent-foreground">
-              <RadioGroupItem value={option} id={`option-${index}`} />
-              <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">{option}</Label>
-            </div>
-          ))}
-        </RadioGroup>
+        <p className="text-lg font-semibold text-foreground">{currentQuestion.text}</p>
+        {currentQuestion.type === 'multiple-choice' && (
+            <RadioGroup
+            onValueChange={setSelectedAnswer}
+            value={selectedAnswer || ""}
+            disabled={isSubmitting || !!answerStatus}
+            className="space-y-2"
+            >
+            {currentQuestion.options.map((option, index) => (
+                <div key={index} className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted/50 transition-colors has-[[data-state=checked]]:bg-accent has-[[data-state=checked]]:text-accent-foreground">
+                <RadioGroupItem value={option} id={`option-${index}`} />
+                <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">{option}</Label>
+                </div>
+            ))}
+            </RadioGroup>
+        )}
+        {/* TODO: Add rendering for other question types like 'fill-blank', 'matching' */}
+
 
         {answerStatus && (
           <Alert variant={answerStatus === 'correct' ? 'default' : 'destructive'} className={answerStatus === 'correct' ? "bg-green-50 border-green-500 text-green-700" : ""}>
              {answerStatus === 'correct' ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
             <AlertTitle>{answerStatus === 'correct' ? 'Correct!' : 'Incorrect'}</AlertTitle>
             {answerStatus === 'incorrect' && <AlertDescription>The correct answer was: {currentQuestion.correctAnswer}</AlertDescription>}
+             {currentQuestion.explanation && <AlertDescription className="mt-2">{currentQuestion.explanation}</AlertDescription>}
           </Alert>
         )}
 

@@ -1,18 +1,63 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Image from "next/image";
 import type { Lesson } from "@/types";
 import { BookOpenText, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image"; // Keep for potential language image later
 
 // Mock data - replace with actual data fetching
 const lessons: Lesson[] = [
-  { id: "1", title: "Basic Duala Greetings", description: "Learn common greetings and introductions.", category: "Vocabulary", content: "", estimatedTimeMinutes: 15, order: 1, icon: "https://placehold.co/100x100.png" },
-  { id: "2", title: "Duala Alphabet and Pronunciation", description: "Master the sounds of Duala.", category: "Fundamentals", content: "", estimatedTimeMinutes: 25, order: 2, icon: "https://placehold.co/100x100.png" },
-  { id: "3", title: "Ordering Food in Duala", description: "Essential phrases for restaurants.", category: "Dialogues", content: "", estimatedTimeMinutes: 20, order: 3, icon: "https://placehold.co/100x100.png" },
-  { id: "4", title: "Family Members", description: "Learn how to talk about your family.", category: "Vocabulary", content: "", estimatedTimeMinutes: 18, order: 4, icon: "https://placehold.co/100x100.png" },
-  { id: "5", title: "Cultural Etiquette in Cameroon", description: "Understand important cultural norms.", category: "Culture", content: "", estimatedTimeMinutes: 30, order: 5, icon: "https://placehold.co/100x100.png" },
+  { 
+    id: "1", 
+    title: "Basic Duala Greetings", 
+    description: "Learn common greetings and introductions.", 
+    category: "Vocabulary", 
+    estimatedTimeMinutes: 15, 
+    order: 1,
+    vocabulary: [
+      { term: "M̀bɔ́lɔ", translation: "Hello" },
+      { term: "Na som", translation: "Thank you" }
+    ]
+  },
+  { 
+    id: "2", 
+    title: "Duala Alphabet and Pronunciation", 
+    description: "Master the sounds of Duala.", 
+    category: "Fundamentals", 
+    estimatedTimeMinutes: 25, 
+    order: 2 
+  },
+  { 
+    id: "3", 
+    title: "Ordering Food in Duala", 
+    description: "Essential phrases for restaurants.", 
+    category: "Dialogues", 
+    estimatedTimeMinutes: 20, 
+    order: 3,
+    dialogues: [
+      { speaker: "Customer", line: "M̀bɔ́lɔ, na me̠nde̠ sombo bia." },
+      { speaker: "Waiter", line: "M̀bɔ́lɔ, nje o me̠nde̠ e?" }
+    ]
+  },
+  { 
+    id: "4", 
+    title: "Family Members", 
+    description: "Learn how to talk about your family.", 
+    category: "Vocabulary", 
+    estimatedTimeMinutes: 18, 
+    order: 4 
+  },
+  { 
+    id: "5", 
+    title: "Cultural Etiquette in Cameroon", 
+    description: "Understand important cultural norms.", 
+    category: "Culture", 
+    estimatedTimeMinutes: 30, 
+    order: 5,
+    culturalTips: "Greetings are very important. Always greet elders first."
+  },
 ];
 
 export default function LessonsPage() {
@@ -26,17 +71,11 @@ export default function LessonsPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {lessons.map((lesson) => (
           <Card key={lesson.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-            {lesson.icon && (
-              <div className="relative h-40 w-full">
-                <Image 
-                  src={lesson.icon} 
-                  alt={lesson.title} 
-                  layout="fill" 
-                  objectFit="cover" 
-                  data-ai-hint={`${lesson.category || 'language learning'} illustration`}
-                />
-              </div>
-            )}
+            {/* No lesson-specific icon as per new schema. Consider showing language icon or category icon if available */}
+            {/* Example: A placeholder or a generic category icon could be used here */}
+             <div className="relative h-40 w-full bg-secondary/20 flex items-center justify-center" data-ai-hint="language lesson abstract">
+                <BookOpenText className="w-16 h-16 text-primary/50" />
+             </div>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg font-semibold text-primary leading-tight">{lesson.title}</CardTitle>
               {lesson.category && <Badge variant="secondary" className="mt-1 w-fit">{lesson.category}</Badge>}

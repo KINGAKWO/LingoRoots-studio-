@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -13,7 +14,7 @@ const quizzes: Quiz[] = [
     title: "Greetings Quiz", 
     description: "Test your knowledge of basic Duala greetings.", 
     questions: [
-      { id: "q1", questionText: "How do you say 'Hello'?", options: ["M̀bɔ́lɔ", "Na som", "Pɛlɛpɛlɛ"], correctAnswer: "M̀bɔ́lɔ", points: 10 },
+      { id: "q1", text: "How do you say 'Hello'?", type: "multiple-choice", options: ["M̀bɔ́lɔ", "Na som", "Pɛlɛpɛlɛ"], correctAnswer: "M̀bɔ́lɔ", points: 10 },
     ],
     passingScore: 70 
   },
@@ -22,7 +23,9 @@ const quizzes: Quiz[] = [
     lessonId: "2", 
     title: "Alphabet Challenge", 
     description: "Check your understanding of the Duala alphabet.", 
-    questions: [], 
+    questions: [
+       { id: "q1a2", type: "multiple-choice", text: "Which letter represents 'ng' sound?", options: ["ɓ", "ŋ", "x", "ɛ"], correctAnswer: "ŋ", points: 10 },
+    ], 
     passingScore: 80 
   },
   { 

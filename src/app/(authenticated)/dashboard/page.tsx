@@ -1,17 +1,24 @@
+
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpenText, CheckCircle2, Target, Zap, Award } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import type { UserProgress } from "@/types"; // UserProgress for mock data
 
 // Mock data - replace with actual data fetching
-const userProgress = {
+const userProgressData: UserProgress = {
   points: 1250,
-  lessonsCompleted: 15,
+  completedLessons: ["1", "2", "3"], // Example lesson IDs
+  quizScores: { "quiz-1": 90, "quiz-2": 75 }, // quizId: score
   currentStreak: 7, // days
-  badgesEarned: 3,
+  badgesEarned: ["1", "2", "3"], // Example badge IDs
 };
+
+const lessonsCompletedCount = userProgressData.completedLessons.length;
+const badgesEarnedCount = userProgressData.badgesEarned.length;
+
 
 const recentActivity = [
   { id: 1, type: "lesson", title: "Basic Greetings", date: "2 days ago" },
@@ -20,7 +27,7 @@ const recentActivity = [
 ];
 
 const featuredLesson = {
-  id: "lesson-101",
+  id: "1", // Matches one of the mock lessons
   title: "Understanding Noun Classes",
   description: "Dive deep into the fascinating world of Duala noun classes.",
   imageUrl: "https://placehold.co/600x400.png",
@@ -44,28 +51,28 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Points"
-          value={userProgress.points}
+          value={userProgressData.points}
           icon={Zap}
           description="Keep learning to earn more!"
           dataAiHint="points score"
         />
         <StatsCard
           title="Lessons Completed"
-          value={userProgress.lessonsCompleted}
+          value={lessonsCompletedCount}
           icon={CheckCircle2}
           description="Great progress!"
           dataAiHint="lessons completed"
         />
         <StatsCard
           title="Current Streak"
-          value={`${userProgress.currentStreak} days`}
+          value={`${userProgressData.currentStreak} days`}
           icon={Target}
           description="Don't break the chain!"
           dataAiHint="learning streak"
         />
         <StatsCard
           title="Badges Earned"
-          value={userProgress.badgesEarned}
+          value={badgesEarnedCount}
           icon={Award}
           description="Collect them all!"
           dataAiHint="achievement badge"
