@@ -25,10 +25,15 @@ const lessons: Lesson[] = [
   { 
     id: "2", 
     title: "Duala Alphabet and Pronunciation", 
-    description: "Master the sounds of Duala.", 
+    description: "Learn the letters of the Duala alphabet and their basic pronunciation.", 
     category: "Fundamentals", 
     estimatedTimeMinutes: 25, 
-    order: 2 
+    order: 2,
+    vocabulary: [
+        { term: "a", translation: "Example: ami" },
+        { term: "b", translation: "Pronounced like 'bé', as in 'bouteille'" },
+        { term: "c", translation: "Pronounced 'tché', as in 'chair'" },
+    ]
   },
   { 
     id: "3", 
