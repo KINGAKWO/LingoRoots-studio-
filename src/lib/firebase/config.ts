@@ -1,16 +1,22 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getAuth, Auth } from "firebase/auth";
-import { getFirestore, Firestore } from "firebase/firestore";
+// Import the functions you need from the SDKs you need
+import { initializeApp, getApp, getApps, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
+import { getAnalytics, type Analytics } from 'firebase/analytics';
 
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "AIzaSyCKX7h5X5ypyot9HUZBLxWRNjOn2T3j-rI",
+  authDomain: "lingoroots-30066.firebaseapp.com",
+  projectId: "lingoroots-30066",
+  storageBucket: "lingoroots-30066.appspot.com", // Corrected storage bucket
+  messagingSenderId: "100987690274",
+  appId: "1:100987690274:web:876393787c77e6f32ad97b"
 };
 
+// Initialize Firebase
 let app: FirebaseApp;
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
@@ -18,7 +24,16 @@ if (!getApps().length) {
   app = getApp();
 }
 
+// Export Firebase services
 const auth: Auth = getAuth(app);
 const db: Firestore = getFirestore(app);
+const storage: FirebaseStorage = getStorage(app); // Added for future use
 
-export { app, auth, db };
+let analytics: Analytics | null = null;
+if (typeof window !== 'undefined') {
+  // Initialize Analytics only on the client side
+  analytics = getAnalytics(app); // Added for future use
+}
+
+
+export { app, auth, db, storage, analytics };
