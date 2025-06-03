@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Globe } from "lucide-react";
 import type { Language } from "@/types"; // Import the new Language type
+import { Badge } from "@/components/ui/badge"; // Import Badge component
 
 // Mock data - replace with actual data fetching later
 const languages: Language[] = [
@@ -47,9 +48,12 @@ export default function LanguageManagementPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{lang.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{lang.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${lang.isActive ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        <Badge 
+                          variant={lang.isActive ? 'default' : 'secondary'}
+                          className={lang.isActive ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'}
+                        >
                           {lang.isActive ? 'Active' : 'Inactive'}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{lang.lessonCount}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -77,3 +81,4 @@ export default function LanguageManagementPage() {
     </div>
   );
 }
+
