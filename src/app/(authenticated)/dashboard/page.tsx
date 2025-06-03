@@ -5,19 +5,19 @@ import { Button } from "@/components/ui/button";
 import { BookOpenText, CheckCircle2, Target, Zap, Award } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import type { UserProgress } from "@/types"; // UserProgress for mock data
+import type { UserProgress } from "@/types"; 
 
 // Mock data - replace with actual data fetching
 const userProgressData: UserProgress = {
   points: 1250,
-  completedLessons: ["1", "2", "3"], // Example lesson IDs
-  quizScores: { "quiz-1": 90, "quiz-2": 75 }, // quizId: score
-  currentStreak: 7, // days
-  badgesEarned: ["1", "2", "3"], // Example badge IDs
+  completedLessons: ["1", "2", "3"], 
+  quizScores: { "quiz-1": 90, "quiz-2": 75 }, 
+  currentStreak: 7, 
+  badges: ["1", "2", "3"], 
 };
 
 const lessonsCompletedCount = userProgressData.completedLessons.length;
-const badgesEarnedCount = userProgressData.badgesEarned.length;
+const badgesEarnedCount = userProgressData.badges.length;
 
 
 const recentActivity = [
@@ -27,11 +27,11 @@ const recentActivity = [
 ];
 
 const featuredLesson = {
-  id: "1", // Matches one of the mock lessons
+  id: "1", 
   title: "Understanding Noun Classes",
   description: "Dive deep into the fascinating world of Duala noun classes.",
   imageUrl: "https://placehold.co/600x400.png",
-  dataAiHint: "african study language",
+  dataAiHint: "african language study", 
 };
 
 export default function DashboardPage() {
@@ -134,3 +134,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

@@ -1,6 +1,7 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Achievement } from "@/types";
-import { Award, ShieldCheck, Star, Zap } from "lucide-react"; // Example icons
+import { Award, ShieldCheck, Star, Zap, BookOpenText, Target, Languages, Globe, CalendarCheck, MessageSquare } from "lucide-react";
 
 // Mock data - replace with actual data fetching
 const userAchievements: Achievement[] = [
@@ -12,7 +13,7 @@ const userAchievements: Achievement[] = [
 ];
 
 const allPossibleAchievements: Achievement[] = [
-  ...userAchievements, // Include earned ones
+  ...userAchievements, 
   { id: "6", name: "Cultural Explorer", description: "Completed a cultural insight lesson.", icon: "Globe" },
   { id: "7", name: "Perfect Week", description: "Maintained a 7-day learning streak.", icon: "CalendarCheck" },
   { id: "8", name: "Dialogue Debutant", description: "Completed your first dialogue practice.", icon: "MessageSquare" },
@@ -21,14 +22,14 @@ const allPossibleAchievements: Achievement[] = [
 
 const IconMap: { [key: string]: React.ElementType } = {
   Star: Star,
-  BookOpenText: Award, // Using Award for lesson completion
-  Target: ShieldCheck, // Using ShieldCheck for quiz mastery
-  Languages: Award, // Using Award for vocab
+  BookOpenText: BookOpenText, 
+  Target: Target, 
+  Languages: Languages, 
   Zap: Zap,
-  Globe: Award,
-  CalendarCheck: Award,
-  MessageSquare: Award,
-  Default: Award,
+  Globe: Globe,
+  CalendarCheck: CalendarCheck,
+  MessageSquare: MessageSquare,
+  Default: Award, 
 };
 
 
@@ -50,7 +51,7 @@ export default function AchievementsPage() {
               className={`flex flex-col items-center p-6 text-center shadow-lg transition-all duration-300 ${
                 isEarned ? 'border-2 border-primary bg-primary/5' : 'bg-card opacity-70 hover:opacity-100'
               }`}
-              data-ai-hint="achievement badge"
+              data-ai-hint={`achievement badge ${achievement.name.toLowerCase()}`}
             >
               <IconComponent className={`h-16 w-16 mb-4 ${isEarned ? 'text-primary' : 'text-muted-foreground'}`} />
               <CardTitle className={`text-lg font-semibold ${isEarned ? 'text-primary' : 'text-foreground'}`}>{achievement.name}</CardTitle>
@@ -74,3 +75,5 @@ export default function AchievementsPage() {
     </div>
   );
 }
+
+    

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -18,21 +19,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import { Loader2, Edit3 } from "lucide-react";
-import { updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth"; // For password/email updates
+import { Loader2, Edit3, Zap, CheckCircle2, Target } from "lucide-react";
+import { updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
+import { StatsCard } from "@/components/dashboard/stats-card";
+import type { UserProgress } from "@/types";
+import { Separator } from "@/components/ui/separator";
 
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required."),
   lastName: z.string().min(1, "Last name is required."),
   email: z.string().email("Invalid email address."),
-  // New password fields (optional)
   currentPassword: z.string().optional(),
   newPassword: z.string().optional(),
   confirmNewPassword: z.string().optional(),
 }).refine(data => {
   if (data.newPassword && !data.currentPassword) {
-    return false; // currentPassword is required if newPassword is set
+    return false;
   }
   return true;
 }, {
@@ -51,12 +54,22 @@ const profileSchema = z.object({
   path: ["newPassword"],
 });
 
+// Mock progress data for display purposes
+const mockUserProgress: UserProgress = {
+  points: 750,
+  completedLessons: ["1", "3", "5"],
+  quizScores: { "quiz-1": 85, "quiz-3": 90 },
+  badges: ["1", "2"],
+  currentStreak: 5,
+};
+
 
 export default function ProfilePage() {
-  const { user, loading: authLoading, error: authError, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [userProgress, setUserProgress] = useState<UserProgress>(mockUserProgress); // Use mock data
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -81,6 +94,9 @@ export default function ProfilePage() {
         newPassword: "",
         confirmNewPassword: "",
       });
+      // In a real app, fetch user.progress here or it would come with the user object
+      // For now, we just use the mock data.
+      // setUserProgress(user.progress || mockUserProgress); 
     }
   }, [user, form]);
 
@@ -99,13 +115,11 @@ export default function ProfilePage() {
     setIsLoading(true);
 
     try {
-      // Update display name
       const newDisplayName = `${values.firstName} ${values.lastName}`.trim();
       if (newDisplayName !== user.displayName) {
         await updateProfile(auth.currentUser, { displayName: newDisplayName });
       }
 
-      // Update email (requires re-authentication)
       if (values.email !== user.email && values.currentPassword) {
          const credential = EmailAuthProvider.credential(user.email!, values.currentPassword);
          await reauthenticateWithCredential(auth.currentUser, credential);
@@ -114,8 +128,6 @@ export default function ProfilePage() {
         toast({ title: "Info", description: "To change email, please provide your current password.", variant: "default" });
       }
 
-
-      // Update password (requires re-authentication)
       if (values.newPassword && values.currentPassword) {
         const credential = EmailAuthProvider.credential(user.email!, values.currentPassword);
         await reauthenticateWithCredential(auth.currentUser, credential);
@@ -124,13 +136,12 @@ export default function ProfilePage() {
       
       toast({ title: "Profile Updated", description: "Your profile has been successfully updated." });
       setIsEditing(false); 
-      // Refresh user state in useAuth if necessary (or Firebase onAuthStateChanged will handle it)
     } catch (error: any) {
       console.error("Profile update error:", error);
       toast({ title: "Update Failed", description: error.message || "Could not update profile.", variant: "destructive" });
     } finally {
       setIsLoading(false);
-      form.reset({ ...values, currentPassword: "", newPassword: "", confirmNewPassword: "" }); // Clear password fields
+      form.reset({ ...values, currentPassword: "", newPassword: "", confirmNewPassword: "" });
     }
   }
 
@@ -138,7 +149,7 @@ export default function ProfilePage() {
   if (!user) return <p>Please log in to view your profile.</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight text-primary font-headline">Your Profile</h1>
         <Button variant="outline" onClick={() => setIsEditing(!isEditing)} className="gap-2">
@@ -149,7 +160,7 @@ export default function ProfilePage() {
       <Card className="shadow-lg">
         <CardHeader className="items-center text-center border-b pb-6">
           <Avatar className="h-24 w-24 mb-4 border-2 border-primary ring-2 ring-primary/50 ring-offset-2">
-            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} data-ai-hint="user avatar large" />
+            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} data-ai-hint="user portrait" />
             <AvatarFallback className="text-3xl">{getInitials(user.displayName)}</AvatarFallback>
           </Avatar>
           <CardTitle className="text-2xl">{user.displayName}</CardTitle>
@@ -247,6 +258,41 @@ export default function ProfilePage() {
           )}
         </CardContent>
       </Card>
+
+      {!isEditing && (
+        <>
+          <Separator />
+          <div className="space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight text-primary font-headline">Your Progress</h2>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <StatsCard
+                title="Total Points"
+                value={userProgress.points}
+                icon={Zap}
+                description="Points earned from lessons and quizzes."
+                dataAiHint="progress points"
+              />
+              <StatsCard
+                title="Lessons Completed"
+                value={userProgress.completedLessons.length}
+                icon={CheckCircle2}
+                description="Keep up the great work!"
+                dataAiHint="progress lessons"
+              />
+              <StatsCard
+                title="Current Streak"
+                value={`${userProgress.currentStreak} days`}
+                icon={Target}
+                description="Maintain your learning consistency."
+                dataAiHint="progress streak"
+              />
+            </div>
+            {/* Future: Could add a list of badges earned or recent quiz scores here */}
+          </div>
+        </>
+      )}
     </div>
   );
 }
+
+    

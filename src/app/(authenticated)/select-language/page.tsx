@@ -65,7 +65,6 @@ export default function SelectLanguagePage() {
                 ${!language.isActive ? 'opacity-50 cursor-not-allowed bg-muted/50' : 'cursor-pointer'}`
               }
               onClick={() => language.isActive && handleSelectLanguage(language.id)}
-              data-ai-hint={`language flag ${language.name.toLowerCase()}`}
             >
               {language.imageUrl && (
                  <div className="relative h-48 w-full">
@@ -75,7 +74,7 @@ export default function SelectLanguagePage() {
                         fill
                         style={{ objectFit: 'cover' }}
                         className="rounded-t-lg"
-                        data-ai-hint={`${language.name} landscape`}
+                        data-ai-hint={`${language.name.toLowerCase()} cameroon cultural`}
                     />
                  </div>
               )}
@@ -100,7 +99,7 @@ export default function SelectLanguagePage() {
                   className="w-full" 
                   variant={selectedLanguageId === language.id ? "default" : "outline"}
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click from firing again
+                    e.stopPropagation(); 
                     if (language.isActive) handleSelectLanguage(language.id);
                   }}
                   disabled={!language.isActive}
@@ -125,3 +124,5 @@ export default function SelectLanguagePage() {
   );
 }
 
+
+    

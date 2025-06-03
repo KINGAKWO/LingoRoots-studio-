@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { Lesson } from "@/types";
 import { BookOpenText, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image"; // Keep for potential language image later
+import Image from "next/image"; 
 
 // Mock data - replace with actual data fetching
 const lessons: Lesson[] = [
@@ -71,9 +71,9 @@ export default function LessonsPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {lessons.map((lesson) => (
           <Card key={lesson.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-            {/* No lesson-specific icon as per new schema. Consider showing language icon or category icon if available */}
-            {/* Example: A placeholder or a generic category icon could be used here */}
-             <div className="relative h-40 w-full bg-secondary/20 flex items-center justify-center" data-ai-hint="language lesson abstract">
+             <div className="relative h-40 w-full bg-secondary/20 flex items-center justify-center" data-ai-hint={`lesson ${lesson.category?.toLowerCase()} abstract`}>
+                {/* Placeholder for lesson image or icon. Could use Image component if URLs are available */}
+                {/* <Image src={lesson.imageUrl || "https://placehold.co/400x200.png"} alt={lesson.title} layout="fill" objectFit="cover" /> */}
                 <BookOpenText className="w-16 h-16 text-primary/50" />
              </div>
             <CardHeader className="pb-3">
@@ -106,3 +106,5 @@ export default function LessonsPage() {
     </div>
   );
 }
+
+    

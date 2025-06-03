@@ -7,6 +7,7 @@ import type { Lesson, Quiz, VocabularyItem, DialogueLine } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 // Mock data - replace with actual data fetching
 const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
@@ -20,7 +21,7 @@ const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
       order: 1,
       estimatedTimeMinutes: 15,
       vocabulary: [
-        { term: "M̀bɔ́lɔ", translation: "Hello", example: "M̀bɔ́lɔ, Sango! (Hello, Sango!)" },
+        { term: "M̀bɔ́lɔ", translation: "Hello", example: "M̀bɔ́lɔ, Sango! (Hello, Sango!)", imageUrl: "https://placehold.co/100x100.png" },
         { term: "M̀bɔ́lɔ ní Mbatan", translation: "Good morning" },
         { term: "Ko̠ o pɛlɛpɛlɛ e?", translation: "How are you?" },
         { term: "Na pɛlɛpɛlɛ", translation: "I am fine" },
@@ -33,7 +34,7 @@ const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
         { speaker: "Sango", line: "Na pɛlɛpɛlɛ buki." },
       ],
       culturalTips: "Greetings are very important in Cameroonian culture. Always greet elders with respect, often by bowing slightly or avoiding direct eye contact initially. Using titles like 'Sango' (Mr./Sir) or 'Ngo' (Ms./Madam) shows respect.",
-      youtubeVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" // Example placeholder
+      youtubeVideoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
     },
     { 
       id: "2", 
@@ -70,11 +71,11 @@ const getLessonQuiz = async (lessonId: string): Promise<Quiz | null> => {
 }
 
 const YouTubeEmbed = ({ embedUrl }: { embedUrl: string }) => (
-  <div className="aspect-video overflow-hidden rounded-lg shadow-lg my-4" data-ai-hint="youtube video player">
+  <div className="aspect-video overflow-hidden rounded-lg shadow-lg my-4" data-ai-hint="language lesson video">
     <iframe
       width="100%"
       height="100%"
-      src={embedUrl.replace("watch?v=", "embed/")} // Ensure it's an embeddable URL
+      src={embedUrl.replace("watch?v=", "embed/")} 
       title="YouTube video player"
       frameBorder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -99,8 +100,6 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
       </Link>
 
       <Card className="shadow-xl overflow-hidden">
-        {/* No lesson-specific icon/image at the top as per new schema */}
-        {/* Instead, a YouTube video might be embedded in the content if available */}
         <CardHeader className="border-b">
           <CardTitle className="text-3xl font-bold text-primary font-headline">{lesson.title}</CardTitle>
           {lesson.category && <Badge variant="outline" className="mt-2 w-fit">{lesson.category}</Badge>}
@@ -110,7 +109,7 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
           )}
         </CardHeader>
         
-        <ScrollArea className="h-[calc(100vh-20rem)]"> {/* Adjust height as needed */}
+        <ScrollArea className="h-[calc(100vh-20rem)]"> 
           <CardContent className="pt-6 space-y-6">
             {lesson.youtubeVideoUrl && <YouTubeEmbed embedUrl={lesson.youtubeVideoUrl} />}
 
@@ -130,7 +129,11 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
                         {item.audioUrl && <Button variant="ghost" size="icon"><Volume2 className="h-5 w-5 text-accent"/></Button>}
                       </div>
                       {item.example && <p className="text-sm text-foreground/80 mt-1"><em>Example: {item.example}</em></p>}
-                       {item.imageUrl && <img src={item.imageUrl} alt={item.term} className="mt-2 rounded max-h-32" data-ai-hint="vocabulary illustration"/>}
+                       {item.imageUrl && (
+                         <div className="mt-2 rounded max-h-32 w-32 relative overflow-hidden">
+                            <Image src={item.imageUrl} alt={item.term} layout="fill" objectFit="cover" data-ai-hint={`vocabulary ${item.term.toLowerCase()}`}/>
+                         </div>
+                        )}
                     </Card>
                   ))}
                 </div>
@@ -193,3 +196,5 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
     </div>
   );
 }
+
+    
