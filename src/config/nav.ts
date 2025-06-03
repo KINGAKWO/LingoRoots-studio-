@@ -1,5 +1,5 @@
 import type { NavItem } from "@/types";
-import { LayoutGrid, BookOpenText, HelpCircle, Award, DatabaseZap, User, Settings } from "lucide-react";
+import { LayoutGrid, BookOpenText, HelpCircle, Award, DatabaseZap, User, Settings, Globe, Users } from "lucide-react";
 
 export const mainNavItems: NavItem[] = [
   {
@@ -36,7 +36,20 @@ export const adminNavItems: NavItem[] = [
   {
     title: "Content Management",
     href: "/admin/content-management",
-    icon: DatabaseZap, // or Settings
+    icon: DatabaseZap,
+    adminOnly: true,
+  },
+  {
+    title: "User Management",
+    href: "/admin/user-management",
+    icon: Users,
+    adminOnly: true,
+  },
+  {
+    title: "Language Management",
+    href: "/admin/language-management",
+    icon: Globe,
     adminOnly: true,
   },
 ];
+

@@ -7,6 +7,7 @@ export interface UserProfile extends FirebaseUser {
   lastName?: string;
   progress?: UserProgress;
   role?: 'learner' | 'contentCreator' | 'admin'; // Added based on RBAC plan
+  selectedLanguageId?: string; // For user's preferred language to learn
 }
 
 export interface Lesson {
@@ -67,3 +68,4 @@ export type NavItem = {
   label?: string;
   adminOnly?: boolean; // Added to match usage in nav config
 };
+
