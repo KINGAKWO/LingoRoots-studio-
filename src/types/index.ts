@@ -5,27 +5,27 @@ export interface UserProfile extends FirebaseUser {
   id: string;
   firstName?: string;
   lastName?: string;
-  progress?: UserProgress; // Kept embedded for now, subcollection fetching can be later
+  progress?: UserProgress; 
   role?: 'learner' | 'contentCreator' | 'admin';
   selectedLanguageId?: string; 
-  createdAt?: Date; // FirebaseUser.metadata.creationTime can be used
+  createdAt?: Date; 
 }
 
 export interface UserProgress {
-  completedLessons: string[]; // Array of lesson IDs
-  quizScores: Record<string, number>; // quizId: score
-  badges: string[]; // Array of achievement IDs
+  completedLessons: string[]; 
+  quizScores: Record<string, number>; 
+  badges: string[]; 
   currentStreak: number;
   points: number;
 }
 
 export interface Language {
-  id: string; // Corresponds to languageId
+  id: string; 
   name: string;
   description?: string;
   imageUrl?: string;
   isActive: boolean;
-  lessonCount?: number; // Denormalized, useful for display
+  lessonCount?: number; 
 }
 
 export interface VocabularyItem {
@@ -34,6 +34,7 @@ export interface VocabularyItem {
   example?: string;
   imageUrl?: string;
   audioUrl?: string;
+  dataAiHint?: string; // Added for specific image hints
 }
 
 export interface DialogueLine {
@@ -46,11 +47,10 @@ export interface Lesson {
   id: string;
   title: string;
   description?: string;
-  category?: string; // e.g., Vocabulary, Dialogues, Culture - Kept as it's useful for filtering
+  category?: string; 
   order: number;
-  estimatedTimeMinutes?: number; // Kept as it's useful
+  estimatedTimeMinutes?: number; 
 
-  // New structured content fields based on schema
   vocabulary?: VocabularyItem[];
   dialogues?: DialogueLine[];
   culturalTips?: string;
@@ -59,22 +59,22 @@ export interface Lesson {
 
 export interface Question {
   id: string;
-  text: string; // Changed from questionText
+  text: string; 
   type: 'multiple-choice' | 'fill-blank' | 'matching';
-  options: string[]; // Specific to multiple-choice
-  correctAnswer: string | string[]; // Can be array for matching
-  points: number; // Kept as it's useful for scoring
-  explanation?: string; // Kept for feedback
+  options: string[]; 
+  correctAnswer: string | string[]; 
+  points: number; 
+  explanation?: string; 
 }
 
 export interface Quiz {
   id:string;
-  lessonId: string; // Associated lesson
-  languageId?: string; // Added for context
+  lessonId: string; 
+  languageId?: string; 
   title: string;
   description?: string;
   questions: Question[];
-  passingScore?: number; // Percentage
+  passingScore?: number; 
 }
 
 export interface Achievement {
@@ -94,3 +94,4 @@ export type NavItem = {
   label?: string;
   adminOnly?: boolean;
 };
+

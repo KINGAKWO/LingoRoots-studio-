@@ -12,13 +12,14 @@ const lessons: Lesson[] = [
   { 
     id: "1", 
     title: "Basic Duala Greetings", 
-    description: "Learn common greetings and introductions.", 
+    description: "Learn essential Duala greetings and common phrases for everyday conversations.", 
     category: "Vocabulary", 
-    estimatedTimeMinutes: 15, 
+    estimatedTimeMinutes: 20, 
     order: 1,
-    vocabulary: [
-      { term: "M̀bɔ́lɔ", translation: "Hello" },
-      { term: "Na som", translation: "Thank you" }
+    vocabulary: [ // Summary vocabulary for display on this page
+      { term: "mônè", translation: "hello, hi" },
+      { term: "na sôm", translation: "thank you" },
+      { term: "É ma ala nê ?", translation: "How are you?" }
     ]
   },
   { 
@@ -72,8 +73,6 @@ export default function LessonsPage() {
         {lessons.map((lesson) => (
           <Card key={lesson.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
              <div className="relative h-40 w-full bg-secondary/20 flex items-center justify-center" data-ai-hint={`lesson ${lesson.category?.toLowerCase()} abstract`}>
-                {/* Placeholder for lesson image or icon. Could use Image component if URLs are available */}
-                {/* <Image src={lesson.imageUrl || "https://placehold.co/400x200.png"} alt={lesson.title} layout="fill" objectFit="cover" /> */}
                 <BookOpenText className="w-16 h-16 text-primary/50" />
              </div>
             <CardHeader className="pb-3">

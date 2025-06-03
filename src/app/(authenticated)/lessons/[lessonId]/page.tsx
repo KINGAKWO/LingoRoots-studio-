@@ -16,24 +16,35 @@ const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
     { 
       id: "1", 
       title: "Basic Duala Greetings", 
-      description: "Learn common greetings and introductions such as 'Bonjour', 'Bonsoir', 'Comment vas-tu?', and their replies.", 
+      description: "Learn essential Duala greetings and common phrases for everyday conversations, from 'hello' to 'how are you?' and their responses.", 
       category: "Vocabulary", 
       order: 1,
-      estimatedTimeMinutes: 15,
+      estimatedTimeMinutes: 20,
       vocabulary: [
-        { term: "M̀bɔ́lɔ", translation: "Hello", example: "M̀bɔ́lɔ, Sango! (Hello, Sango!)", imageUrl: "https://placehold.co/100x100.png" },
-        { term: "M̀bɔ́lɔ ní Mbatan", translation: "Good morning" },
-        { term: "Ko̠ o pɛlɛpɛlɛ e?", translation: "How are you?" },
-        { term: "Na pɛlɛpɛlɛ", translation: "I am fine" },
-        { term: "Na som", translation: "Thank you", example: "Na som buki (Thank you very much)" },
+        { term: "Díná lâm na ...", translation: "My name is ...", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "name introduction" },
+        { term: "mônè", translation: "hello, hi", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting hello" },
+        { term: "bobe", translation: "bad", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "emotion bad" },
+        { term: "bwâm", translation: "good, well", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "emotion good" },
+        { term: "idibà á bwâm e", translation: "good morning", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting morning" },
+        { term: "na sôm", translation: "thanks, thank you", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting thanks" },
+        { term: "na oa pé", translation: "you too", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "phrase youtoo" },
+        { term: "é titi lambo", translation: "don't mention it", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "phrase welcome" },
+        { term: "na má àlà", translation: "goodbye, bye", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting goodbye" },
+        { term: "buna bópépe", translation: "see you later", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting later" },
+        { term: "É ma ala nê ?", translation: "How are you?", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting howareyou" },
+        { term: "É ma ala", translation: "I am fine", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting imfine" },
+        { term: "Njé yé péná ?", translation: "What's up?", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "greeting whatsup" },
+        { term: "Tô lambo lá pena", translation: "Nothing new", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "phrase nothingnew" },
+        { term: "ee", translation: "yes", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "word yes" },
+        { term: "kèm", translation: "no", imageUrl: "https://placehold.co/100x100.png", dataAiHint: "word no" },
       ],
       dialogues: [
-        { speaker: "Muna", line: "M̀bɔ́lɔ, Sango!" },
-        { speaker: "Sango", line: "M̀bɔ́lɔ, Muna! Ko̠ o pɛlɛpɛlɛ e?" },
-        { speaker: "Muna", line: "Na pɛlɛpɛlɛ, na som. Na wa e?" },
-        { speaker: "Sango", line: "Na pɛlɛpɛlɛ buki." },
+        { speaker: "Muna", line: "mônè, Sango!" },
+        { speaker: "Sango", line: "mônè, Muna! É ma ala nê ?" },
+        { speaker: "Muna", line: "É ma ala, na sôm. Na wa e?" },
+        { speaker: "Sango", line: "É ma ala buki." },
       ],
-      culturalTips: "Greetings are very important in Cameroonian culture. Always greet elders with respect, often by bowing slightly or avoiding direct eye contact initially. Using titles like 'Sango' (Mr./Sir) or 'Ngo' (Ms./Madam) shows respect.",
+      culturalTips: "Greetings are very important in Cameroonian culture. Always greet elders with respect. Using titles like 'Sango' (Mr./Sir) or 'Ngo' (Ms./Madam) shows respect.",
       youtubeVideoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
     },
     { 
@@ -44,9 +55,9 @@ const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
       order: 2,
       estimatedTimeMinutes: 25,
       vocabulary: [
-        { term: "ɓ", translation: "Voiced bilabial implosive (like 'b' in 'buy' but imploded)"},
-        { term: "ɛ", translation: "Open-mid front unrounded vowel (like 'e' in 'bet')"},
-        { term: "ŋ", translation: "Velar nasal (like 'ng' in 'sing')"},
+        { term: "ɓ", translation: "Voiced bilabial implosive (like 'b' in 'buy' but imploded)", dataAiHint: "alphabet letter" },
+        { term: "ɛ", translation: "Open-mid front unrounded vowel (like 'e' in 'bet')", dataAiHint: "alphabet letter" },
+        { term: "ŋ", translation: "Velar nasal (like 'ng' in 'sing')", dataAiHint: "alphabet letter" },
       ],
       culturalTips: "Duala is a tonal language, meaning the pitch of a syllable can change its meaning. Pay close attention to tone marks (e.g., M̀bɔ́lɔ vs. Mbɔlɔ)."
     },
@@ -62,8 +73,10 @@ const getLessonQuiz = async (lessonId: string): Promise<Quiz | null> => {
       lessonId: "1",
       title: "Greetings Quiz",
       questions: [
-        { id: "q1", text: "How do you say 'Hello' in Duala?", type: "multiple-choice", options: ["M̀bɔ́lɔ", "Na som", "Pɛlɛpɛlɛ"], correctAnswer: "M̀bɔ́lɔ", points: 10 },
-        { id: "q2", text: "What does 'Na som' mean?", type: "multiple-choice", options: ["Goodbye", "Thank you", "Yes"], correctAnswer: "Thank you", points: 10 },
+        { id: "q1", text: "How do you say 'hello, hi' in Duala?", type: "multiple-choice", options: ["mônè", "na sôm", "É ma ala"], correctAnswer: "mônè", points: 10, explanation: "'mônè' is a common way to say 'hello' or 'hi' in Duala." },
+        { id: "q2", text: "What does 'na sôm' mean?", type: "multiple-choice", options: ["goodbye", "thank you", "yes"], correctAnswer: "thank you", points: 10, explanation: "'na sôm' translates to 'thank you'." },
+        { id: "q3", text: "How do you ask 'How are you?' in Duala?", type: "multiple-choice", options: ["idibà á bwâm e", "É ma ala nê ?", "É ma ala"], correctAnswer: "É ma ala nê ?", points: 15, explanation: "'É ma ala nê ?' is a way to ask 'How are you?' in Duala." },
+        { id: "q4", text: "What is the Duala for 'I am fine'?", type: "multiple-choice", options: ["bobe", "É ma ala", "Njé yé péná ?"], correctAnswer: "É ma ala", points: 10, explanation: "'É ma ala' means 'I am fine' in Duala." },
       ]
     };
   }
@@ -131,7 +144,7 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
                       {item.example && <p className="text-sm text-foreground/80 mt-1"><em>Example: {item.example}</em></p>}
                        {item.imageUrl && (
                          <div className="mt-2 rounded max-h-32 w-32 relative overflow-hidden">
-                            <Image src={item.imageUrl} alt={item.term} layout="fill" objectFit="cover" data-ai-hint={`vocabulary ${item.term.toLowerCase()}`}/>
+                            <Image src={item.imageUrl} alt={item.term} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint || `duala ${item.term.toLowerCase().split(' ')[0]}`}/>
                          </div>
                         )}
                     </Card>
