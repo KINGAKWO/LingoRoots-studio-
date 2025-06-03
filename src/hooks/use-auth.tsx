@@ -1,9 +1,11 @@
+
 "use client";
 
 import type { User as FirebaseUser, AuthError } from 'firebase/auth';
-import { auth } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config'; // Added db
 import type { UserProfile } from '@/types';
 import { onAuthStateChanged, signOut as firebaseSignOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail as firebaseSendPasswordResetEmail, updateProfile } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'; // Added doc, setDoc, serverTimestamp
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -29,6 +31,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         // Potentially fetch additional user profile data from Firestore here to get the role
+        // For now, role is hardcoded as 'learner' client-side.
+        // Once Firestore user document is reliably created on sign-up,
+        // this is where you'd fetch doc(db, "users", firebaseUser.uid) to get the role.
         const profile: UserProfile = {
           ...firebaseUser,
           id: firebaseUser.uid,
@@ -51,16 +56,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, {
-          displayName: `${firstName || ''} ${lastName || ''}`.trim()
+      const firebaseUser = userCredential.user;
+      if (firebaseUser) {
+        const newDisplayName = `${firstName || ''} ${lastName || ''}`.trim();
+        await updateProfile(firebaseUser, {
+          displayName: newDisplayName
         });
-         // Firestore document creation (with role: 'learner') would typically happen via a Firebase Function on user creation.
+
+        // Create user document in Firestore
+        await setDoc(doc(db, "users", firebaseUser.uid), {
+          email: firebaseUser.email,
+          displayName: newDisplayName,
+          role: 'learner', // Default role
+          createdAt: serverTimestamp()
+        });
       }
-      // The onAuthStateChanged listener will pick up the new user and set the default role.
-      // For immediate UI consistency, you could optimistically set it here, but it's better handled by onAuthStateChanged or fetching.
+      // onAuthStateChanged will handle setting the user state
       setLoading(false);
-      return userCredential.user;
+      return firebaseUser;
     } catch (e) {
       setError(e as AuthError);
       setLoading(false);
@@ -74,7 +87,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       // The onAuthStateChanged listener will pick up the user.
-      // Role fetching from Firestore would happen in onAuthStateChanged or a subsequent effect.
       setLoading(false);
       return userCredential.user;
     } catch (e) {
