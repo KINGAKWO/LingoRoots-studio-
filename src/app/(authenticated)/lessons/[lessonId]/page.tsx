@@ -45,7 +45,7 @@ const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
         { speaker: "Sango", line: "É ma ala buki." },
       ],
       culturalTips: "Greetings are very important in Cameroonian culture. Always greet elders with respect. Using titles like 'Sango' (Mr./Sir) or 'Ngo' (Ms./Madam) shows respect.",
-      youtubeVideoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 
+      youtubeVideoUrl: "https://youtu.be/VV9gq-XwA-E" 
     },
     { 
       id: "2", 
