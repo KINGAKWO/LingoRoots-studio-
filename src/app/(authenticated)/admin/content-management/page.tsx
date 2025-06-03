@@ -1,7 +1,9 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge"; // Import Badge component
 
 // Mock Data
 const lessons = [
@@ -57,9 +59,10 @@ export default function ContentManagementPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{lesson.title}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{lesson.category}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${lesson.status === 'Published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          <Badge variant={lesson.status === 'Published' ? 'default' : 'secondary'}
+                                 className={lesson.status === 'Published' ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'}>
                             {lesson.status}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <Button variant="link" size="sm" className="text-accent p-0 h-auto">Edit</Button>
@@ -102,9 +105,10 @@ export default function ContentManagementPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{quiz.title}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{quiz.lesson}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${quiz.status === 'Published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                           <Badge variant={quiz.status === 'Published' ? 'default' : 'secondary'}
+                                 className={quiz.status === 'Published' ? 'bg-green-500 hover:bg-green-600' : 'bg-yellow-500 hover:bg-yellow-600'}>
                             {quiz.status}
-                          </span>
+                          </Badge>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                            <Button variant="link" size="sm" className="text-accent p-0 h-auto">Edit</Button>
