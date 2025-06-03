@@ -6,7 +6,7 @@ export interface UserProfile extends FirebaseUser {
   firstName?: string;
   lastName?: string;
   progress?: UserProgress;
-  // role?: 'learner' | 'creator'; // If needed for CMS
+  role?: 'learner' | 'contentCreator' | 'admin'; // Added based on RBAC plan
 }
 
 export interface Lesson {
@@ -65,5 +65,5 @@ export type NavItem = {
   disabled?: boolean;
   external?: boolean;
   label?: string;
-  adminOnly?: boolean; // For CMS link
+  adminOnly?: boolean; // Added to match usage in nav config
 };

@@ -28,12 +28,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Potentially fetch additional user profile data from Firestore here
+        // Potentially fetch additional user profile data from Firestore here to get the role
         const profile: UserProfile = {
           ...firebaseUser,
           id: firebaseUser.uid,
           firstName: firebaseUser.displayName?.split(' ')[0] || '',
           // lastName: firebaseUser.displayName?.split(' ')[1] || '', // Example
+          role: 'learner', // Default role as per spec, this should be updated from Firestore or custom claims
         };
         setUser(profile);
       } else {
@@ -54,9 +55,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await updateProfile(userCredential.user, {
           displayName: `${firstName || ''} ${lastName || ''}`.trim()
         });
-         // Create user document in Firestore here if needed
+         // Firestore document creation (with role: 'learner') would typically happen via a Firebase Function on user creation.
       }
-      setUser(userCredential.user as UserProfile); // Or fetch enriched profile
+      // The onAuthStateChanged listener will pick up the new user and set the default role.
+      // For immediate UI consistency, you could optimistically set it here, but it's better handled by onAuthStateChanged or fetching.
       setLoading(false);
       return userCredential.user;
     } catch (e) {
@@ -71,7 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user as UserProfile); // Or fetch enriched profile
+      // The onAuthStateChanged listener will pick up the user.
+      // Role fetching from Firestore would happen in onAuthStateChanged or a subsequent effect.
       setLoading(false);
       return userCredential.user;
     } catch (e) {
