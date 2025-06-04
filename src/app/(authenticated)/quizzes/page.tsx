@@ -5,21 +5,10 @@ import Link from "next/link";
 import type { Quiz } from "@/types";
 import { HelpCircle, ListChecks } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { mockQuizzes } from "@/data/mock/quizzes";
-import { mockLessons } from "@/data/mock/lessons"; // To get lesson titles
+import { getQuizzes } from "@/services/quizService"; // Import the service
 
-// Helper function to get lesson title from mockLessons
-const getLessonTitle = (lessonId: string): string => {
-  const lesson = mockLessons.find(l => l.id === lessonId);
-  return lesson ? lesson.title : "Related Lesson";
-};
-
-export default function QuizzesPage() {
-  // Enhance quizzes with lesson titles using the centralized mock data
-  const quizzesWithLessonTitles = mockQuizzes.map(quiz => ({
-    ...quiz,
-    lessonTitle: getLessonTitle(quiz.lessonId),
-  }));
+export default async function QuizzesPage() {
+  const quizzes: Quiz[] = await getQuizzes(); // Fetch quizzes from Firestore
 
   return (
     <div className="space-y-6">
@@ -28,13 +17,15 @@ export default function QuizzesPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {quizzesWithLessonTitles.map((quiz) => (
+        {quizzes.map((quiz) => (
           <Card key={quiz.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg font-semibold text-primary leading-tight">{quiz.title}</CardTitle>
-              <Badge variant="secondary" className="mt-1 w-fit text-xs">
-                Related Lesson: {quiz.lessonTitle}
-              </Badge>
+              {quiz.lessonTitle && ( // Display lessonTitle if it exists
+                <Badge variant="secondary" className="mt-1 w-fit text-xs">
+                  Related Lesson: {quiz.lessonTitle}
+                </Badge>
+              )}
             </CardHeader>
             <CardContent className="flex-grow">
               <p className="text-sm text-muted-foreground line-clamp-3">{quiz.description}</p>
@@ -54,7 +45,7 @@ export default function QuizzesPage() {
           </Card>
         ))}
       </div>
-      {mockQuizzes.length === 0 && (
+      {quizzes.length === 0 && (
         <p className="text-center text-muted-foreground py-10">No quizzes available yet. Complete some lessons first!</p>
       )}
     </div>

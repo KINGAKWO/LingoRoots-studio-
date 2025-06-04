@@ -4,12 +4,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { BookOpenText, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image"; 
-import { mockLessons } from "@/data/mock/lessons";
-import type { Lesson } from "@/types"; // Keep Lesson type for structure
+import type { Lesson } from "@/types";
+import { getLessons } from "@/services/lessonService"; // Import the service
 
-export default function LessonsPage() {
-  const lessons: Lesson[] = mockLessons; // Use centralized mock data
+export default async function LessonsPage() {
+  const lessons: Lesson[] = await getLessons(); // Fetch lessons from Firestore
 
   return (
     <div className="space-y-6">

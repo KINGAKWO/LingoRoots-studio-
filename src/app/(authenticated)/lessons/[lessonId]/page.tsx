@@ -8,20 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { mockLessons } from "@/data/mock/lessons";
-import { mockQuizzes } from "@/data/mock/quizzes";
-
-// Fetch lesson details from centralized mock data
-const getLessonDetails = async (lessonId: string): Promise<Lesson | null> => {
-  await new Promise(resolve => setTimeout(resolve, 10)); // Simulate async
-  return mockLessons.find(l => l.id === lessonId) || null;
-};
-
-// Fetch quiz details from centralized mock data
-const getLessonQuiz = async (lessonId: string): Promise<Quiz | null> => {
-  await new Promise(resolve => setTimeout(resolve, 10)); // Simulate async
-  return mockQuizzes.find(q => q.lessonId === lessonId) || null;
-};
+import { getLessonById } from "@/services/lessonService"; // Import the service
+import { getQuizByLessonId } from "@/services/quizService"; // Import the service
 
 const getYouTubeEmbedUrl = (videoUrl: string): string => {
   let videoId: string | null = null;
@@ -79,11 +67,22 @@ const YouTubeEmbed = ({ videoUrl }: { videoUrl: string }) => {
 };
 
 export default async function LessonDetailsPage({ params }: { params: { lessonId: string } }) {
-  const lesson = await getLessonDetails(params.lessonId);
-  const quiz = await getLessonQuiz(params.lessonId); // Use lessonId to find related quiz
+  const lesson: Lesson | null = await getLessonById(params.lessonId);
+  const quiz: Quiz | null = await getQuizByLessonId(params.lessonId);
 
   if (!lesson) {
-    return <div className="text-center py-10">Lesson not found.</div>;
+    return (
+      <div className="text-center py-10">
+         <h1 className="text-2xl font-semibold text-destructive mb-4">Lesson Not Found</h1>
+        <p className="text-muted-foreground mb-6">The lesson you are looking for does not exist or may have been moved.</p>
+        <Link href="/lessons" passHref>
+          <Button variant="outline">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to All Lessons
+          </Button>
+        </Link>
+      </div>
+    );
   }
 
   return (

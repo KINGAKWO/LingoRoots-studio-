@@ -10,19 +10,17 @@
  *    - Go to your Firebase project settings > Service accounts.
  *    - Generate a new private key (JSON file).
  *    - !! KEEP THIS FILE SECURE AND DO NOT COMMIT IT TO GIT !!
- *    - A common practice is to place this file in a gitignored directory,
- *      for example, `.secure/serviceAccountKey.json` at the project root.
- *      Ensure `.secure/` is added to your `.gitignore` file.
- *      Replace the placeholder content in `.secure/serviceAccountKey.json` with your actual key.
+ *    - Place this file in the `.secure/serviceAccountKey.json` (this path is gitignored).
+ *      Ensure you replace the placeholder content in `.secure/serviceAccountKey.json` with your actual key.
  *    - Set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the path of this JSON file.
  *      Example (in your terminal, before running the script):
- *      export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/.secure/serviceAccountKey.json"
- *      (On Windows, use `set GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\.secure\serviceAccountKey.json"`)
+ *      export GOOGLE_APPLICATION_CREDENTIALS=".secure/serviceAccountKey.json"
+ *      (On Windows, use `set GOOGLE_APPLICATION_CREDENTIALS=".secure\serviceAccountKey.json"`)
  *      Using GOOGLE_APPLICATION_CREDENTIALS is the recommended approach.
  *
  * 2. To run this script:
  *    npm run seed:firestore
- *    (Ensure "tsx" and "firebase-admin" are in devDependencies in package.json)
+ *    (Ensure "tsx", "firebase-admin" are in devDependencies in package.json)
  */
 
 import * as admin from 'firebase-admin';
@@ -32,21 +30,6 @@ import { mockQuizzes } from '../src/data/mock/quizzes';
 // import { mockUserAchievements, mockAllPossibleAchievements } from '../src/data/mock/achievements';
 
 // Initialize Firebase Admin SDK
-// If GOOGLE_APPLICATION_CREDENTIALS is set, it will be used automatically.
-// If you've placed your service account key at `.secure/serviceAccountKey.json` AND
-// set GOOGLE_APPLICATION_CREDENTIALS to point to it, that will work.
-//
-// Alternatively, you could explicitly load it like this, but using the environment variable is generally preferred:
-//
-// import serviceAccountKey from '../.secure/serviceAccountKey.json'; // Adjust path if needed
-// if (admin.apps.length === 0) {
-//   admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccountKey)
-//   });
-//   console.log("Firebase Admin SDK initialized using local service account key.");
-// }
-//
-// However, relying on GOOGLE_APPLICATION_CREDENTIALS is more flexible and standard.
 try {
   if (admin.apps.length === 0) {
     admin.initializeApp();
@@ -82,9 +65,14 @@ async function seedQuizzes() {
   console.log('Seeding quizzes...');
   for (const quiz of mockQuizzes) {
     try {
+      const lesson = mockLessons.find(l => l.id === quiz.lessonId);
+      const quizDataWithLessonTitle = {
+        ...quiz,
+        lessonTitle: lesson ? lesson.title : "Unknown Lesson",
+      };
       // Use quiz.id as the document ID
-      await quizzesCollection.doc(quiz.id).set(quiz);
-      console.log(`Added quiz: ${quiz.title} (ID: ${quiz.id})`);
+      await quizzesCollection.doc(quiz.id).set(quizDataWithLessonTitle);
+      console.log(`Added quiz: ${quiz.title} (ID: ${quiz.id}) with lesson title: ${quizDataWithLessonTitle.lessonTitle}`);
     } catch (error) {
       console.error(`Error adding quiz ${quiz.title}:`, error);
     }
@@ -109,3 +97,4 @@ main().catch(error => {
   console.error('Error during seeding process:', error);
   process.exit(1);
 });
+

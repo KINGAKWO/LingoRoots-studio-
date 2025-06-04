@@ -48,7 +48,7 @@ export interface Lesson {
   title: string;
   description?: string;
   category?: string; 
-  order: number;
+  order: number; // Make sure this is part of your Firestore data if you order by it
   estimatedTimeMinutes?: number; 
 
   vocabulary?: VocabularyItem[];
@@ -75,6 +75,7 @@ export interface Quiz {
   description?: string;
   questions: Question[];
   passingScore?: number; 
+  lessonTitle?: string; // Added to store the title of the related lesson
 }
 
 export interface Achievement {
@@ -94,4 +95,3 @@ export type NavItem = {
   label?: string;
   adminOnly?: boolean;
 };
-
