@@ -9,7 +9,8 @@ export async function getLessons(): Promise<Lesson[]> {
   console.log("Attempting to fetch lessons from Firestore...");
   try {
     const lessonsCol = collection(db, 'lessons');
-    const q = query(lessonsCol, orderBy('order', 'asc'));
+    // Temporarily removed orderBy for debugging. Original: const q = query(lessonsCol, orderBy('order', 'asc'));
+    const q = query(lessonsCol); 
     const lessonSnapshot = await getDocs(q);
 
     console.log(`Fetched ${lessonSnapshot.size} lesson documents.`);
@@ -21,7 +22,7 @@ export async function getLessons(): Promise<Lesson[]> {
 
     const lessonList = lessonSnapshot.docs.map(doc => {
       const data = doc.data();
-      console.log(`Mapping lesson document: ID=${doc.id}, Title=${data.title}`);
+      console.log(`Mapping lesson document: ID=${doc.id}, Title=${data.title}, Order=${data.order}`); // Added order to log
       return { id: doc.id, ...data } as Lesson;
     });
 
@@ -44,8 +45,9 @@ export async function getLessonById(lessonId: string): Promise<Lesson | null> {
     const lessonRef = doc(db, 'lessons', lessonId);
     const lessonSnap = await getDoc(lessonRef);
     if (lessonSnap.exists()) {
-      console.log(`Lesson found: ID=${lessonSnap.id}, Title=${lessonSnap.data().title}`);
-      return { id: lessonSnap.id, ...lessonSnap.data() } as Lesson;
+      const data = lessonSnap.data();
+      console.log(`Lesson found: ID=${lessonSnap.id}, Title=${data.title}`);
+      return { id: lessonSnap.id, ...data } as Lesson;
     } else {
       console.warn(`No lesson found with ID: ${lessonId}`);
       return null;
@@ -59,4 +61,3 @@ export async function getLessonById(lessonId: string): Promise<Lesson | null> {
     return null; // Return null on error
   }
 }
-
