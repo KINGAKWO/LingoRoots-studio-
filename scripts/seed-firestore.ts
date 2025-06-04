@@ -10,10 +10,12 @@
  *    - Go to your Firebase project settings > Service accounts.
  *    - Generate a new private key (JSON file).
  *    - !! KEEP THIS FILE SECURE AND DO NOT COMMIT IT TO GIT !!
+ *    - A common practice is to place this file in a gitignored directory,
+ *      for example, `.secure/serviceAccountKey.json` at the project root.
  *    - Set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the path of this JSON file.
  *      Example (in your terminal, before running the script):
- *      export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/serviceAccountKey.json"
- *      (On Windows, use `set GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\serviceAccountKey.json"`)
+ *      export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/.secure/serviceAccountKey.json"
+ *      (On Windows, use `set GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\.secure\serviceAccountKey.json"`)
  *
  * 2. To run this script:
  *    npm run seed:firestore
@@ -21,15 +23,15 @@
  */
 
 import * as admin from 'firebase-admin';
-import { mockLessons } from '../src/data/mock/lessons'; // Adjust path as necessary
-import { mockQuizzes } from '../src/data/mock/quizzes'; // Adjust path as necessary
+import { mockLessons } from '../src/data/mock/lessons';
+import { mockQuizzes } from '../src/data/mock/quizzes';
 // Import other mock data as needed
 // import { mockUserAchievements, mockAllPossibleAchievements } from '../src/data/mock/achievements';
 
 // Initialize Firebase Admin SDK
 // If GOOGLE_APPLICATION_CREDENTIALS is set, it will be used automatically.
 // Otherwise, you might need to initialize with a service account object:
-// const serviceAccount = require('/path/to/your/serviceAccountKey.json');
+// const serviceAccount = require('/path/to/your/.secure/serviceAccountKey.json');
 // admin.initializeApp({
 //   credential: admin.credential.cert(serviceAccount)
 // });
