@@ -2,89 +2,25 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import type { Lesson } from "@/types";
 import { BookOpenText, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image"; 
-
-// Mock data - replace with actual data fetching
-const lessons: Lesson[] = [
-  { 
-    id: "1", 
-    title: "Basic Duala Greetings", 
-    description: "Learn essential Duala greetings and common phrases for everyday conversations.", 
-    category: "Vocabulary", 
-    estimatedTimeMinutes: 20, 
-    order: 1,
-    vocabulary: [ 
-      { term: "mônè", translation: "hello, hi" },
-      { term: "na sôm", translation: "thank you" },
-      { term: "É ma ala nê ?", translation: "How are you?" }
-    ]
-  },
-  { 
-    id: "2", 
-    title: "Duala Alphabet and Pronunciation", 
-    description: "Learn the letters of the Duala alphabet and their basic pronunciation.", 
-    category: "Fundamentals", 
-    estimatedTimeMinutes: 25, 
-    order: 2,
-    vocabulary: [
-        { term: "a", translation: "Example: ami" },
-        { term: "b", translation: "Pronounced like 'bé', as in 'bouteille'" },
-        { term: "c", translation: "Pronounced 'tché', as in 'chair'" },
-    ]
-  },
-  { 
-    id: "3", 
-    title: "Ordering Food in Duala", 
-    description: "Essential phrases for restaurants.", 
-    category: "Dialogues", 
-    estimatedTimeMinutes: 20, 
-    order: 3,
-    dialogues: [
-      { speaker: "Customer", line: "M̀bɔ́lɔ, na me̠nde̠ sombo bia." },
-      { speaker: "Waiter", line: "M̀bɔ́lɔ, nje o me̠nde̠ e?" }
-    ]
-  },
-  { 
-    id: "4", 
-    title: "Mbia - Family - La famille", 
-    description: "Learn Duala terms for family members.", 
-    category: "Vocabulary", 
-    estimatedTimeMinutes: 18, 
-    order: 4,
-    vocabulary: [
-        { term: "pambambÄ", translation: "grandfather" },
-        { term: "mambambÄ", translation: "grandmother" },
-        { term: "tetÄ", translation: "father, dad" },
-        { term: "yeye", translation: "mother, mom" },
-    ]
-  },
-  { 
-    id: "5", 
-    title: "Cultural Etiquette in Cameroon", 
-    description: "Understand important cultural norms.", 
-    category: "Culture", 
-    estimatedTimeMinutes: 30, 
-    order: 5,
-    culturalTips: "Greetings are very important. Always greet elders first."
-  },
-];
+import { mockLessons } from "@/data/mock/lessons";
+import type { Lesson } from "@/types"; // Keep Lesson type for structure
 
 export default function LessonsPage() {
+  const lessons: Lesson[] = mockLessons; // Use centralized mock data
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold tracking-tight text-primary font-headline">Interactive Lessons</h1>
-        {/* Potentially a filter or search bar here */}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {lessons.map((lesson) => (
           <Card key={lesson.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
              <div className="relative h-40 w-full bg-secondary/20 flex items-center justify-center" data-ai-hint={`lesson ${lesson.category?.toLowerCase()} abstract`}>
-                {/* Placeholder Image or Icon */}
                 <BookOpenText className="w-16 h-16 text-primary/50" />
              </div>
             <CardHeader className="pb-3">
@@ -117,5 +53,3 @@ export default function LessonsPage() {
     </div>
   );
 }
-
-    

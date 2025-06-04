@@ -6,8 +6,10 @@ import { BookOpenText, CheckCircle2, Target, Zap, Award } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import type { UserProgress } from "@/types"; 
+import { mockRecentActivity, mockFeaturedLesson } from "@/data/mock/dashboard";
+import { mockLessons } from "@/data/mock/lessons"; // Import to potentially make featuredLesson consistent
 
-// Mock data - replace with actual data fetching
+// Mock data for user progress - can be centralized later if needed across more components
 const userProgressData: UserProgress = {
   points: 1250,
   completedLessons: ["1", "2", "3"], 
@@ -19,20 +21,18 @@ const userProgressData: UserProgress = {
 const lessonsCompletedCount = userProgressData.completedLessons.length;
 const badgesEarnedCount = userProgressData.badges.length;
 
+// For consistency, try to find the featured lesson in mockLessons, or use the dashboard specific one.
+let featuredLessonToDisplay = mockFeaturedLesson;
+const lessonFromMock = mockLessons.find(l => l.id === mockFeaturedLesson.id);
+if (lessonFromMock) {
+    featuredLessonToDisplay = {
+        ...mockFeaturedLesson, // Keep original dataAiHint etc.
+        title: lessonFromMock.title,
+        description: lessonFromMock.description || mockFeaturedLesson.description,
+        // imageUrl can remain from mockFeaturedLesson or be updated if lessons have images
+    };
+}
 
-const recentActivity = [
-  { id: 1, type: "lesson", title: "Basic Greetings", date: "2 days ago" },
-  { id: 2, type: "quiz", title: "Vocabulary Quiz 1", date: "1 day ago", score: "90%" },
-  { id: 3, type: "badge", title: "Quick Learner", date: "1 day ago" },
-];
-
-const featuredLesson = {
-  id: "1", 
-  title: "Understanding Noun Classes",
-  description: "Dive deep into the fascinating world of Duala noun classes.",
-  imageUrl: "https://placehold.co/600x400.png",
-  dataAiHint: "african language study", 
-};
 
 export default function DashboardPage() {
   return (
@@ -47,7 +47,6 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Points"
@@ -79,26 +78,24 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Main content area - can be split further */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Featured Lesson / Next Up */}
         <Card className="lg:col-span-2 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold text-primary">Featured Lesson: {featuredLesson.title}</CardTitle>
-            <CardDescription>{featuredLesson.description}</CardDescription>
+            <CardTitle className="text-xl font-semibold text-primary">Featured Lesson: {featuredLessonToDisplay.title}</CardTitle>
+            <CardDescription>{featuredLessonToDisplay.description}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="aspect-video overflow-hidden rounded-lg">
               <Image 
-                src={featuredLesson.imageUrl} 
-                alt={featuredLesson.title} 
+                src={featuredLessonToDisplay.imageUrl} 
+                alt={featuredLessonToDisplay.title} 
                 width={600} 
                 height={400} 
                 className="object-cover w-full h-full"
-                data-ai-hint={featuredLesson.dataAiHint} 
+                data-ai-hint={featuredLessonToDisplay.dataAiHint} 
               />
             </div>
-            <Link href={`/lessons/${featuredLesson.id}`} passHref>
+            <Link href={`/lessons/${featuredLessonToDisplay.id}`} passHref>
               <Button className="w-full sm:w-auto">
                 Start Learning
               </Button>
@@ -106,14 +103,13 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Recent Activity */}
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-primary">Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
-              {recentActivity.map((activity) => (
+              {mockRecentActivity.map((activity) => (
                 <li key={activity.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 transition-colors">
                   <div>
                     <p className="font-medium text-sm text-foreground">{activity.title}</p>
@@ -124,7 +120,7 @@ export default function DashboardPage() {
                   {activity.type === 'badge' && <Award className="h-5 w-5 text-yellow-500" />}
                 </li>
               ))}
-              {recentActivity.length === 0 && (
+              {mockRecentActivity.length === 0 && (
                 <p className="text-sm text-muted-foreground">No recent activity yet. Start a lesson!</p>
               )}
             </ul>
@@ -134,5 +130,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
