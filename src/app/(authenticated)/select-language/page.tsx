@@ -13,7 +13,7 @@ import Image from 'next/image';
 // Mock data - replace with actual data fetching later
 const availableLanguages: Language[] = [
   { id: "dua", name: "Duala", description: "A Bantu language spoken in Cameroon.", imageUrl: "https://placehold.co/300x200.png", isActive: true, lessonCount: 5 },
-  { id: "ewo", name: "Ewondo", description: "Another Bantu language from Cameroon.", imageUrl: "https://placehold.co/300x200.png", isActive: true, lessonCount: 3 },
+  { id: "ewo", name: "Ewondo", description: "Another Bantu language from Cameroon.", imageUrl: "https://placehold.co/300x200.png", isActive: false, lessonCount: 0 },
   { id: "bas", name: "Bassa", description: "A language spoken by the Bassa people of Cameroon.", imageUrl: "https://placehold.co/300x200.png", isActive: false, lessonCount: 0 },
 ];
 
@@ -65,6 +65,7 @@ export default function SelectLanguagePage() {
                 ${!language.isActive ? 'opacity-50 cursor-not-allowed bg-muted/50' : 'cursor-pointer'}`
               }
               onClick={() => language.isActive && handleSelectLanguage(language.id)}
+              data-ai-hint={`${language.name.toLowerCase()} cameroon cultural`}
             >
               {language.imageUrl && (
                  <div className="relative h-48 w-full">
@@ -91,7 +92,7 @@ export default function SelectLanguagePage() {
               <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground line-clamp-3">{language.description}</p>
                 {language.lessonCount !== undefined && (
-                  <p className="text-xs text-muted-foreground mt-2">{language.lessonCount} lessons available</p>
+                  <p className="text-xs text-muted-foreground mt-2">{language.lessonCount > 0 ? `${language.lessonCount} lessons available` : 'No lessons yet'}</p>
                 )}
               </CardContent>
               <CardFooter>
@@ -123,6 +124,3 @@ export default function SelectLanguagePage() {
     </div>
   );
 }
-
-
-    
