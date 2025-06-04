@@ -30,16 +30,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Potentially fetch additional user profile data from Firestore here to get the role
-        // For now, role is hardcoded as 'learner' client-side.
-        // Once Firestore user document is reliably created on sign-up,
-        // this is where you'd fetch doc(db, "users", firebaseUser.uid) to get the role.
+        const nameParts = firebaseUser.displayName?.split(" ") || ["", ""];
         const profile: UserProfile = {
           ...firebaseUser,
           id: firebaseUser.uid,
-          firstName: firebaseUser.displayName?.split(' ')[0] || '',
-          // lastName: firebaseUser.displayName?.split(' ')[1] || '', // Example
-          role: 'learner', // Default role as per spec, this should be updated from Firestore or custom claims
+          firstName: nameParts[0] || '',
+          lastName: nameParts.slice(1).join(" ") || "", // Added lastName inference
+          role: 'learner', 
         };
         setUser(profile);
       } else {
@@ -137,3 +134,4 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
