@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { BookOpenText, CheckCircle2, Target, Zap, Award } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import type { UserProgress } from "@/types"; 
-import { mockRecentActivity, mockFeaturedLesson } from "@/data/mock/dashboard";
-import { mockLessons } from "@/data/mock/lessons"; // Import to potentially make featuredLesson consistent
+import type { UserProgress, Lesson } from "@/types"; 
+import { mockRecentActivity } from "@/data/mock/dashboard";
+import { getLessons } from "@/services/lessonService"; // Import lesson service
 
 // Mock data for user progress - can be centralized later if needed across more components
 const userProgressData: UserProgress = {
@@ -21,20 +21,11 @@ const userProgressData: UserProgress = {
 const lessonsCompletedCount = userProgressData.completedLessons.length;
 const badgesEarnedCount = userProgressData.badges.length;
 
-// For consistency, try to find the featured lesson in mockLessons, or use the dashboard specific one.
-let featuredLessonToDisplay = mockFeaturedLesson;
-const lessonFromMock = mockLessons.find(l => l.id === mockFeaturedLesson.id);
-if (lessonFromMock) {
-    featuredLessonToDisplay = {
-        ...mockFeaturedLesson, // Keep original dataAiHint etc.
-        title: lessonFromMock.title,
-        description: lessonFromMock.description || mockFeaturedLesson.description,
-        // imageUrl can remain from mockFeaturedLesson or be updated if lessons have images
-    };
-}
 
+export default async function DashboardPage() {
+  const allLessons: Lesson[] = await getLessons();
+  const featuredLessonToDisplay: Lesson | null = allLessons.length > 0 ? allLessons[0] : null;
 
-export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -81,26 +72,37 @@ export default function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold text-primary">Featured Lesson: {featuredLessonToDisplay.title}</CardTitle>
-            <CardDescription>{featuredLessonToDisplay.description}</CardDescription>
+            <CardTitle className="text-xl font-semibold text-primary">
+              Featured Lesson: {featuredLessonToDisplay ? featuredLessonToDisplay.title : "No lessons available"}
+            </CardTitle>
+            <CardDescription>
+              {featuredLessonToDisplay ? featuredLessonToDisplay.description : "Check back soon for new lessons!"}
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="aspect-video overflow-hidden rounded-lg">
-              <Image 
-                src={featuredLessonToDisplay.imageUrl} 
-                alt={featuredLessonToDisplay.title} 
-                width={600} 
-                height={400} 
-                className="object-cover w-full h-full"
-                data-ai-hint={featuredLessonToDisplay.dataAiHint} 
-              />
-            </div>
-            <Link href={`/lessons/${featuredLessonToDisplay.id}`} passHref>
-              <Button className="w-full sm:w-auto">
-                Start Learning
-              </Button>
-            </Link>
-          </CardContent>
+          {featuredLessonToDisplay && (
+            <CardContent className="space-y-4">
+              <div className="aspect-video overflow-hidden rounded-lg">
+                <Image 
+                  src={featuredLessonToDisplay.vocabulary?.[0]?.imageUrl || "https://placehold.co/600x400.png"} // Use a vocab image or fallback
+                  alt={featuredLessonToDisplay.title} 
+                  width={600} 
+                  height={400} 
+                  className="object-cover w-full h-full"
+                  data-ai-hint={featuredLessonToDisplay.category ? `lesson ${featuredLessonToDisplay.category.toLowerCase()}` : "language lesson"} 
+                />
+              </div>
+              <Link href={`/lessons/${featuredLessonToDisplay.id}`} passHref>
+                <Button className="w-full sm:w-auto">
+                  Start Learning
+                </Button>
+              </Link>
+            </CardContent>
+          )}
+          {!featuredLessonToDisplay && (
+            <CardContent>
+              <p className="text-muted-foreground">Come back later for exciting lessons!</p>
+            </CardContent>
+          )}
         </Card>
 
         <Card className="shadow-lg">
