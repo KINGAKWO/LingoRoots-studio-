@@ -13,10 +13,12 @@
  *    - A common practice is to place this file in a gitignored directory,
  *      for example, `.secure/serviceAccountKey.json` at the project root.
  *      Ensure `.secure/` is added to your `.gitignore` file.
+ *      Replace the placeholder content in `.secure/serviceAccountKey.json` with your actual key.
  *    - Set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the path of this JSON file.
  *      Example (in your terminal, before running the script):
  *      export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/.secure/serviceAccountKey.json"
  *      (On Windows, use `set GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\.secure\serviceAccountKey.json"`)
+ *      Using GOOGLE_APPLICATION_CREDENTIALS is the recommended approach.
  *
  * 2. To run this script:
  *    npm run seed:firestore
@@ -31,24 +33,29 @@ import { mockQuizzes } from '../src/data/mock/quizzes';
 
 // Initialize Firebase Admin SDK
 // If GOOGLE_APPLICATION_CREDENTIALS is set, it will be used automatically.
-// Alternatively, if you have placed your service account key at a known path like `.secure/serviceAccountKey.json`
-// (and that path is gitignored), you could load it like this:
+// If you've placed your service account key at `.secure/serviceAccountKey.json` AND
+// set GOOGLE_APPLICATION_CREDENTIALS to point to it, that will work.
+//
+// Alternatively, you could explicitly load it like this, but using the environment variable is generally preferred:
 //
 // import serviceAccountKey from '../.secure/serviceAccountKey.json'; // Adjust path if needed
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccountKey)
-// });
+// if (admin.apps.length === 0) {
+//   admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccountKey)
+//   });
+//   console.log("Firebase Admin SDK initialized using local service account key.");
+// }
 //
-// However, using GOOGLE_APPLICATION_CREDENTIALS is generally preferred for flexibility.
+// However, relying on GOOGLE_APPLICATION_CREDENTIALS is more flexible and standard.
 try {
   if (admin.apps.length === 0) {
     admin.initializeApp();
-    console.log("Firebase Admin SDK initialized successfully using GOOGLE_APPLICATION_CREDENTIALS.");
+    console.log("Firebase Admin SDK initialized. It will use GOOGLE_APPLICATION_CREDENTIALS if set, or attempt to find default credentials.");
   } else {
     console.log("Firebase Admin SDK already initialized.");
   }
 } catch (error: any) {
-  console.error("Error initializing Firebase Admin SDK. Ensure GOOGLE_APPLICATION_CREDENTIALS is set correctly, or provide a service account object directly.", error);
+  console.error("Error initializing Firebase Admin SDK. Ensure GOOGLE_APPLICATION_CREDENTIALS is set correctly, or provide a service account object directly if needed.", error);
   process.exit(1);
 }
 
