@@ -6,11 +6,11 @@ import type { Lesson } from '@/types';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 
 export async function getLessons(): Promise<Lesson[]> {
-  console.log("Attempting to fetch lessons from Firestore...");
+  console.log("Attempting to fetch lessons from Firestore with ordering...");
   try {
     const lessonsCol = collection(db, 'lessons');
-    // Temporarily removed orderBy for debugging. Original: const q = query(lessonsCol, orderBy('order', 'asc'));
-    const q = query(lessonsCol); 
+    // Reinstate orderBy - if an index is needed, Firebase should log an error with a link
+    const q = query(lessonsCol, orderBy('order', 'asc')); 
     const lessonSnapshot = await getDocs(q);
 
     console.log(`Fetched ${lessonSnapshot.size} lesson documents.`);
@@ -22,19 +22,17 @@ export async function getLessons(): Promise<Lesson[]> {
 
     const lessonList = lessonSnapshot.docs.map(doc => {
       const data = doc.data();
-      console.log(`Mapping lesson document: ID=${doc.id}, Title=${data.title}, Order=${data.order}`); // Added order to log
+      console.log(`Mapping lesson document: ID=${doc.id}, Title=${data.title}, Order=${data.order}`);
       return { id: doc.id, ...data } as Lesson;
     });
 
     console.log(`Successfully mapped ${lessonList.length} lessons.`);
     return lessonList;
-  } catch (error) {
-    console.error("Error fetching lessons from Firestore:", error);
-    // It's good to log the full error object, as it might contain more details like permission issues
-    if (error instanceof Error && 'code' in error) {
-        console.error("Firebase error code:", (error as any).code);
-        console.error("Firebase error message:", (error as any).message);
-    }
+  } catch (error: any) {
+    console.error("Error fetching lessons from Firestore:");
+    console.error("Code:", error.code);
+    console.error("Message:", error.message);
+    console.error("Full error object:", error);
     return []; // Return empty array on error
   }
 }
@@ -52,12 +50,11 @@ export async function getLessonById(lessonId: string): Promise<Lesson | null> {
       console.warn(`No lesson found with ID: ${lessonId}`);
       return null;
     }
-  } catch (error) {
-    console.error(`Error fetching lesson with ID ${lessonId}:`, error);
-     if (error instanceof Error && 'code' in error) {
-        console.error("Firebase error code:", (error as any).code);
-        console.error("Firebase error message:", (error as any).message);
-    }
+  } catch (error: any) {
+    console.error(`Error fetching lesson with ID ${lessonId}:`);
+    console.error("Code:", error.code);
+    console.error("Message:", error.message);
+    console.error("Full error object:", error);
     return null; // Return null on error
   }
 }
