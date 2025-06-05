@@ -34,10 +34,10 @@ export default function SelectLanguagePage() {
     const selectedLang = availableLanguages.find(lang => lang.id === languageId);
     toast({
       title: "Language Selected",
-      description: `You've selected ${selectedLang?.name}. You can now proceed to lessons.`,
+      description: `You've selected ${selectedLang?.name}. Redirecting to lessons...`,
     });
     // For now, just a toast. Later, this would update user profile and potentially redirect.
-    // router.push('/dashboard'); // Or '/lessons'
+    router.push('/lessons'); 
   };
 
   if (!clientLoaded) {
