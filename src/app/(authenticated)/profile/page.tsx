@@ -20,8 +20,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Loader2, Edit3, Zap, CheckCircle2, Target } from "lucide-react";
-import { updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider, User } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
+import { doc, getDoc, db } from '@/lib/firebase/config';
 import { StatsCard } from "@/components/dashboard/stats-card";
 import type { UserProgress } from "@/types";
 import { Separator } from "@/components/ui/separator";
@@ -54,14 +55,6 @@ const profileSchema = z.object({
   path: ["newPassword"],
 });
 
-// Mock progress data for display purposes
-const mockUserProgress: UserProgress = {
-  points: 750,
-  completedLessons: ["1", "3", "5"],
-  quizScores: { "quiz-1": 85, "quiz-3": 90 },
-  badges: ["1", "2"],
-  currentStreak: 5,
-};
 
 
 export default function ProfilePage() {
@@ -70,7 +63,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [userProgress, setUserProgress] = useState<UserProgress>(mockUserProgress); // Use mock data
-
+  const [progressLoading, setProgressLoading] = useState(true);
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -84,6 +77,22 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
+    const fetchUserProgress = async (currentUser: User) => {
+      setProgressLoading(true);
+      try {
+        // Assuming user progress is stored in a document named after the user's UID in a 'users' collection
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists() && userDocSnap.data().progress) {
+          setUserProgress(userDocSnap.data().progress as UserProgress);
+        } else {
+          // Handle case where progress data doesn't exist yet (e.g., new user)
+          setUserProgress({ points: 0, completedLessons: [], quizScores: {}, badges: [], currentStreak: 0 });
+        }
+      } catch (error) {
+        console.error("Error fetching user progress:", error);
+      } finally { setProgressLoading(false); }    };
     if (user) {
       const nameParts = user.displayName?.split(" ") || ["", ""];
       form.reset({
@@ -94,9 +103,8 @@ export default function ProfilePage() {
         newPassword: "",
         confirmNewPassword: "",
       });
-      // In a real app, fetch user.progress here or it would come with the user object
-      // For now, we just use the mock data.
-      // setUserProgress(user.progress || mockUserProgress); 
+      fetchUserProgress(user);
+
     }
   }, [user, form]);
 

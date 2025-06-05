@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -9,15 +8,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { getLessonById } from "@/services/lessonService"; // Import the service
+import LessonClientContent from "@/components/lessons/LessonClientContent"; // Import the client component
 import { getQuizByLessonId } from "@/services/quizService"; // Import the service
 
 const getYouTubeEmbedUrl = (videoUrl: string): string => {
   let videoId: string | null = null;
   try {
     const urlObj = new URL(videoUrl);
-    
+
     if (urlObj.hostname === 'youtu.be') {
-      videoId = urlObj.pathname.substring(1); 
+      videoId = urlObj.pathname.substring(1);
     } else if (urlObj.hostname === 'www.youtube.com' || urlObj.hostname === 'youtube.com') {
       if (urlObj.pathname === '/watch') {
         videoId = urlObj.searchParams.get('v');
@@ -27,7 +27,7 @@ const getYouTubeEmbedUrl = (videoUrl: string): string => {
     }
   } catch (e) {
     console.error("Invalid YouTube URL passed to getYouTubeEmbedUrl:", videoUrl, e);
-    if (/^[a-zA-Z0-9_-]{11}$/.test(videoUrl)) { 
+    if (/^[a-zA-Z0-9_-]{11}$/.test(videoUrl)) {
         return `https://www.youtube.com/embed/${videoUrl}`;
     }
     return 'about:blank';
@@ -40,7 +40,7 @@ const getYouTubeEmbedUrl = (videoUrl: string): string => {
     }
     return `https://www.youtube.com/embed/${videoId}`;
   }
-  
+
   console.warn("Could not extract YouTube video ID from URL:", videoUrl);
   return 'about:blank';
 };
@@ -69,6 +69,9 @@ const YouTubeEmbed = ({ videoUrl }: { videoUrl: string }) => {
 export default async function LessonDetailsPage({ params }: { params: { lessonId: string } }) {
   const lesson: Lesson | null = await getLessonById(params.lessonId);
   const quiz: Quiz | null = await getQuizByLessonId(params.lessonId);
+
+
+
 
   if (!lesson) {
     return (
@@ -101,69 +104,12 @@ export default async function LessonDetailsPage({ params }: { params: { lessonId
             <p className="text-xs text-muted-foreground pt-1">Estimated time: {lesson.estimatedTimeMinutes} minutes</p>
           )}
         </CardHeader>
-        
+
         <ScrollArea className="h-[calc(100vh-20rem)]">
-          <CardContent className="pt-6 space-y-6">
-            {lesson.youtubeVideoUrl && <YouTubeEmbed videoUrl={lesson.youtubeVideoUrl} />}
-
-            {lesson.vocabulary && lesson.vocabulary.length > 0 && (
-              <section>
-                <h2 className="text-2xl font-semibold mb-3 text-primary/90 font-headline flex items-center">
-                  <BookOpen className="mr-2 h-6 w-6"/> Vocabulary
-                </h2>
-                <div className="space-y-2">
-                  {lesson.vocabulary.map((item, index) => (
-                    <Card key={index} className="p-4 bg-card hover:bg-muted/30 transition-colors">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-semibold text-lg text-foreground">{item.term}</p>
-                          <p className="text-muted-foreground">{item.translation}</p>
-                        </div>
-                        {item.audioUrl && <Button variant="ghost" size="icon"><Volume2 className="h-5 w-5 text-accent"/></Button>}
-                      </div>
-                      {item.example && <p className="text-sm text-foreground/80 mt-1"><em>Example: {item.example}</em></p>}
-                       {item.imageUrl && (
-                         <div className="mt-2 rounded max-h-32 w-32 relative overflow-hidden">
-                            <Image src={item.imageUrl} alt={item.term} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint || `duala ${item.term.toLowerCase().split(' ')[0]}`}/>
-                         </div>
-                        )}
-                    </Card>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {lesson.dialogues && lesson.dialogues.length > 0 && (
-              <section>
-                <Separator className="my-6"/>
-                <h2 className="text-2xl font-semibold mb-3 text-primary/90 font-headline">Dialogues</h2>
-                <div className="space-y-4">
-                  {lesson.dialogues.map((dialogue, index) => (
-                    <div key={index} className="p-3 border rounded-md bg-card">
-                      <p className="font-medium text-sm text-primary">{dialogue.speaker}:</p>
-                      <p className="text-foreground/90">{dialogue.line}</p>
-                       {dialogue.audioUrl && <Button variant="ghost" size="sm" className="mt-1 text-accent"><Volume2 className="mr-1 h-4 w-4"/> Listen</Button>}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {lesson.culturalTips && (
-              <section>
-                <Separator className="my-6"/>
-                <h2 className="text-2xl font-semibold mb-3 text-primary/90 font-headline flex items-center">
-                  <Lightbulb className="mr-2 h-6 w-6"/> Cultural Insights
-                </h2>
-                <div className="p-4 bg-secondary/30 rounded-md border border-accent/50">
-                  <p className="text-foreground/90 whitespace-pre-line">{lesson.culturalTips}</p>
-                </div>
-              </section>
-            )}
-          </CardContent>
+          <LessonClientContent lesson={lesson} />
         </ScrollArea>
       </Card>
-      
+
       <CardFooter className="mt-8 p-6 bg-secondary/30 rounded-lg shadow">
         <div>
             <h2 className="text-2xl font-semibold mb-4 text-primary font-headline">Reinforce Your Learning</h2>

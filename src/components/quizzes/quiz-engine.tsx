@@ -1,7 +1,7 @@
 
 "use client";
 
-import type { Quiz, Question as QuestionType } from "@/types";
+import type { Quiz } from "@/types";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,9 @@ import { quizFeedback, type QuizFeedbackInput } from "@/ai/flows/quiz-feedback";
 import { Loader2, Sparkles, CheckCircle, XCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { db } from "@/lib/firebase/config";
+import { doc, updateDoc, increment } from "firebase/firestore";
 
 interface QuizEngineProps {
   quizData: Quiz;
@@ -73,8 +76,29 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
     setAnswerStatus(null);
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-    } else {
+    } else {      
       setShowResult(true);
+
+      // --- Firestore Update Logic ---
+      const { user } = useAuth(); // Get user from auth context
+      if (user) {
+        const userRef = doc(db, "users", user.uid);
+        try {
+          await updateDoc(userRef, {
+            quizScores: {
+              ...(user.progress?.quizScores || {}), // Use existing scores or an empty object
+              [quizData.id]: score // Add/update score for this quiz using quizData.id
+            },
+            points: increment(score), // Add earned points (using current score for simplicity)
+            // Streak logic can be added here if you have the necessary data
+          });
+          console.log("User progress updated in Firestore");
+        } catch (error) {
+          console.error("Error updating user progress in Firestore:", error);
+          toast({ title: "Error", description: "Could not save quiz progress.", variant: "destructive" });
+        }
+      }
+      // --- End Firestore Update Logic ---
     }
   };
 
