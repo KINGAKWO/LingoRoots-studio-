@@ -21,8 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Loader2, Edit3, Zap, CheckCircle2, Target } from "lucide-react";
 import { updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider, User } from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
-import { doc, getDoc, db } from '@/lib/firebase/config';
+import { auth, db } from "@/lib/firebase/config"; // Ensure db is imported here
+import { doc, getDoc } from 'firebase/firestore'; // Import doc and getDoc from firestore
 import { StatsCard } from "@/components/dashboard/stats-card";
 import type { UserProgress } from "@/types";
 import { Separator } from "@/components/ui/separator";
@@ -55,6 +55,14 @@ const profileSchema = z.object({
   path: ["newPassword"],
 });
 
+// Mock data for initial state - will be overwritten by fetched data or defaults
+const mockUserProgress: UserProgress = {
+  points: 0,
+  completedLessons: [],
+  quizScores: {},
+  badges: [],
+  currentStreak: 0,
+};
 
 
 export default function ProfilePage() {
@@ -62,7 +70,7 @@ export default function ProfilePage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [userProgress, setUserProgress] = useState<UserProgress>(mockUserProgress); // Use mock data
+  const [userProgress, setUserProgress] = useState<UserProgress>(mockUserProgress); 
   const [progressLoading, setProgressLoading] = useState(true);
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -80,18 +88,18 @@ export default function ProfilePage() {
     const fetchUserProgress = async (currentUser: User) => {
       setProgressLoading(true);
       try {
-        // Assuming user progress is stored in a document named after the user's UID in a 'users' collection
         const userDocRef = doc(db, 'users', currentUser.uid);
         const userDocSnap = await getDoc(userDocRef);
 
-        if (userDocSnap.exists() && userDocSnap.data().progress) {
-          setUserProgress(userDocSnap.data().progress as UserProgress);
+        if (userDocSnap.exists() && userDocSnap.data()?.progress) {
+          setUserProgress(userDocSnap.data()?.progress as UserProgress);
         } else {
-          // Handle case where progress data doesn't exist yet (e.g., new user)
           setUserProgress({ points: 0, completedLessons: [], quizScores: {}, badges: [], currentStreak: 0 });
         }
       } catch (error) {
         console.error("Error fetching user progress:", error);
+        // Keep mockUserProgress or default state on error
+        setUserProgress(mockUserProgress);
       } finally { setProgressLoading(false); }    };
     if (user) {
       const nameParts = user.displayName?.split(" ") || ["", ""];
@@ -272,29 +280,33 @@ export default function ProfilePage() {
           <Separator />
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold tracking-tight text-primary font-headline">Your Progress</h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              <StatsCard
-                title="Total Points"
-                value={userProgress.points}
-                icon={Zap}
-                description="Points earned from lessons and quizzes."
-                dataAiHint="progress points"
-              />
-              <StatsCard
-                title="Lessons Completed"
-                value={userProgress.completedLessons.length}
-                icon={CheckCircle2}
-                description="Keep up the great work!"
-                dataAiHint="progress lessons"
-              />
-              <StatsCard
-                title="Current Streak"
-                value={`${userProgress.currentStreak} days`}
-                icon={Target}
-                description="Maintain your learning consistency."
-                dataAiHint="progress streak"
-              />
-            </div>
+            {progressLoading ? (
+              <div className="flex justify-center items-center h-24"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <StatsCard
+                  title="Total Points"
+                  value={userProgress.points}
+                  icon={Zap}
+                  description="Points earned from lessons and quizzes."
+                  dataAiHint="progress points"
+                />
+                <StatsCard
+                  title="Lessons Completed"
+                  value={userProgress.completedLessons.length}
+                  icon={CheckCircle2}
+                  description="Keep up the great work!"
+                  dataAiHint="progress lessons"
+                />
+                <StatsCard
+                  title="Current Streak"
+                  value={`${userProgress.currentStreak} days`}
+                  icon={Target}
+                  description="Maintain your learning consistency."
+                  dataAiHint="progress streak"
+                />
+              </div>
+            )}
             {/* Future: Could add a list of badges earned or recent quiz scores here */}
           </div>
         </>
