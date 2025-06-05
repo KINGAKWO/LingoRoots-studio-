@@ -7,7 +7,7 @@ export interface UserProfile extends FirebaseUser {
   lastName?: string;
   progress?: UserProgress; 
   role?: 'learner' | 'contentCreator' | 'admin';
-  selectedLanguageId?: string; // Added
+  selectedLanguageId?: string;
   createdAt?: Date; 
 }
 
@@ -45,7 +45,7 @@ export interface DialogueLine {
 
 export interface Lesson {
   id: string;
-  languageId: string; // Added
+  languageId: string; 
   title: string;
   description?: string;
   category?: string; 
@@ -70,7 +70,7 @@ export interface Question {
 export interface Quiz {
   id:string;
   lessonId: string; 
-  languageId?: string; // Can also be on quiz for filtering if needed
+  languageId?: string; 
   title: string;
   description?: string;
   questions: Question[];
@@ -95,3 +95,12 @@ export type NavItem = {
   label?: string;
   adminOnly?: boolean;
 };
+
+export interface LeaderboardUser {
+  id: string;
+  rank: number;
+  displayName: string;
+  points: number;
+  avatarUrl?: string; // Optional: if you want to display user avatars
+  avatarFallback: string;
+}

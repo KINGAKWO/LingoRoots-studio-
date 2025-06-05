@@ -1,6 +1,6 @@
 
 import type { NavItem } from "@/types";
-import { LayoutGrid, BookOpenText, HelpCircle, Award, DatabaseZap, User, Settings, Globe, Users, LanguagesIcon } from "lucide-react";
+import { LayoutGrid, BookOpenText, HelpCircle, Award, DatabaseZap, User, Settings, Globe, Users, LanguagesIcon, Trophy } from "lucide-react";
 
 export const mainNavItems: NavItem[] = [
   {
@@ -11,7 +11,7 @@ export const mainNavItems: NavItem[] = [
   {
     title: "Select Language",
     href: "/select-language",
-    icon: LanguagesIcon, // Using LanguagesIcon, ensure it's a valid Lucide icon or import appropriately
+    icon: LanguagesIcon,
   },
   {
     title: "Lessons",
@@ -22,6 +22,11 @@ export const mainNavItems: NavItem[] = [
     title: "Quizzes",
     href: "/quizzes",
     icon: HelpCircle,
+  },
+  {
+    title: "Leaderboard",
+    href: "/leaderboard",
+    icon: Trophy,
   },
   {
     title: "Achievements",
@@ -58,4 +63,3 @@ export const adminNavItems: NavItem[] = [
     adminOnly: true,
   },
 ];
-
