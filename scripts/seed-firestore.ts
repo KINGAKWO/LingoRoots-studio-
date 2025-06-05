@@ -51,8 +51,9 @@ async function seedLessons() {
   for (const lesson of mockLessons) {
     try {
       // Use lesson.id as the document ID
+      // The lesson object from mockLessons already includes languageId
       await lessonsCollection.doc(lesson.id).set(lesson);
-      console.log(`Added lesson: ${lesson.title} (ID: ${lesson.id})`);
+      console.log(`Added lesson: ${lesson.title} (ID: ${lesson.id}, Language: ${lesson.languageId})`);
     } catch (error) {
       console.error(`Error adding lesson ${lesson.title}:`, error);
     }
@@ -69,10 +70,11 @@ async function seedQuizzes() {
       const quizDataWithLessonTitle = {
         ...quiz,
         lessonTitle: lesson ? lesson.title : "Unknown Lesson",
+        languageId: lesson ? lesson.languageId : "unknown", // Add languageId from lesson
       };
       // Use quiz.id as the document ID
       await quizzesCollection.doc(quiz.id).set(quizDataWithLessonTitle);
-      console.log(`Added quiz: ${quiz.title} (ID: ${quiz.id}) with lesson title: ${quizDataWithLessonTitle.lessonTitle}`);
+      console.log(`Added quiz: ${quiz.title} (ID: ${quiz.id}) with lesson title: ${quizDataWithLessonTitle.lessonTitle} Language: ${quizDataWithLessonTitle.languageId}`);
     } catch (error) {
       console.error(`Error adding quiz ${quiz.title}:`, error);
     }
@@ -97,4 +99,3 @@ main().catch(error => {
   console.error('Error during seeding process:', error);
   process.exit(1);
 });
-

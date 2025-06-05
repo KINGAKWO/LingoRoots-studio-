@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { Language } from "@/types";
-import { CheckCircle, Languages } from "lucide-react";
+import { CheckCircle, Languages, Loader2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { useAuth } from '@/hooks/use-auth'; // Import useAuth
 
 // Mock data - replace with actual data fetching later
 const availableLanguages: Language[] = [
@@ -18,30 +19,46 @@ const availableLanguages: Language[] = [
 ];
 
 export default function SelectLanguagePage() {
+  const { user, updateUserInContextAndFirestore, loading: authLoading } = useAuth(); // Get user and updateUser function
   const [selectedLanguageId, setSelectedLanguageId] = useState<string | null>(null);
   const [clientLoaded, setClientLoaded] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
     setClientLoaded(true);
-    // In a real app, you might fetch user's current selection here
-    // For now, we just enable client-side interactions
-  }, []);
+    if (user?.selectedLanguageId) {
+      setSelectedLanguageId(user.selectedLanguageId);
+    }
+  }, [user]);
 
-  const handleSelectLanguage = (languageId: string) => {
-    setSelectedLanguageId(languageId);
+  const handleSelectLanguage = async (languageId: string) => {
+    if (!user) {
+      toast({ title: "Error", description: "You must be logged in.", variant: "destructive" });
+      return;
+    }
+    setIsUpdating(true);
     const selectedLang = availableLanguages.find(lang => lang.id === languageId);
-    toast({
-      title: "Language Selected",
-      description: `You've selected ${selectedLang?.name}. Redirecting to lessons...`,
-    });
-    // For now, just a toast. Later, this would update user profile and potentially redirect.
-    router.push('/lessons'); 
+    
+    try {
+      await updateUserInContextAndFirestore({ selectedLanguageId: languageId });
+      setSelectedLanguageId(languageId); // Update local state for immediate UI feedback
+      toast({
+        title: "Language Selected",
+        description: `You've selected ${selectedLang?.name}. Redirecting to lessons...`,
+      });
+      router.push('/lessons'); 
+    } catch (error) {
+      console.error("Error selecting language:", error);
+      toast({ title: "Error", description: "Could not save your language selection.", variant: "destructive"});
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  if (!clientLoaded) {
-    return <div className="flex justify-center items-center h-64"><Languages className="h-12 w-12 animate-pulse text-primary" /></div>;
+  if (!clientLoaded || authLoading) {
+    return <div className="flex justify-center items-center h-64"><Loader2 className="h-12 w-12 animate-pulse text-primary" /></div>;
   }
 
   return (
@@ -64,7 +81,7 @@ export default function SelectLanguagePage() {
                 ${selectedLanguageId === language.id ? 'border-2 border-primary ring-2 ring-primary/50' : 'border-border'}
                 ${!language.isActive ? 'opacity-50 cursor-not-allowed bg-muted/50' : 'cursor-pointer'}`
               }
-              onClick={() => language.isActive && handleSelectLanguage(language.id)}
+              onClick={() => language.isActive && !isUpdating && handleSelectLanguage(language.id)}
               data-ai-hint={`${language.name.toLowerCase()} cameroon cultural`}
             >
               {language.imageUrl && (
@@ -101,11 +118,11 @@ export default function SelectLanguagePage() {
                   variant={selectedLanguageId === language.id ? "default" : "outline"}
                   onClick={(e) => {
                     e.stopPropagation(); 
-                    if (language.isActive) handleSelectLanguage(language.id);
+                    if (language.isActive && !isUpdating) handleSelectLanguage(language.id);
                   }}
-                  disabled={!language.isActive}
+                  disabled={!language.isActive || isUpdating}
                 >
-                  {selectedLanguageId === language.id && <CheckCircle className="mr-2 h-4 w-4" />}
+                  {isUpdating && selectedLanguageId === language.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : selectedLanguageId === language.id && <CheckCircle className="mr-2 h-4 w-4" />}
                   {selectedLanguageId === language.id ? 'Selected' : (language.isActive ? 'Select Language' : 'Coming Soon')}
                 </Button>
               </CardFooter>

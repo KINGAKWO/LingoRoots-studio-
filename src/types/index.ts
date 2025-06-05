@@ -7,13 +7,13 @@ export interface UserProfile extends FirebaseUser {
   lastName?: string;
   progress?: UserProgress; 
   role?: 'learner' | 'contentCreator' | 'admin';
-  selectedLanguageId?: string; 
+  selectedLanguageId?: string; // Added
   createdAt?: Date; 
 }
 
 export interface UserProgress {
   completedLessons: string[]; 
-  quizScores: Record<string, number>; 
+  quizScores: Record<string, number>; // quizId: score
   badges: string[]; 
   currentStreak: number;
   points: number;
@@ -34,7 +34,7 @@ export interface VocabularyItem {
   example?: string;
   imageUrl?: string;
   audioUrl?: string;
-  dataAiHint?: string; // Added for specific image hints
+  dataAiHint?: string; 
 }
 
 export interface DialogueLine {
@@ -45,12 +45,12 @@ export interface DialogueLine {
 
 export interface Lesson {
   id: string;
+  languageId: string; // Added
   title: string;
   description?: string;
   category?: string; 
-  order: number; // Make sure this is part of your Firestore data if you order by it
+  order: number; 
   estimatedTimeMinutes?: number; 
-
   vocabulary?: VocabularyItem[];
   dialogues?: DialogueLine[];
   culturalTips?: string;
@@ -70,12 +70,12 @@ export interface Question {
 export interface Quiz {
   id:string;
   lessonId: string; 
-  languageId?: string; 
+  languageId?: string; // Can also be on quiz for filtering if needed
   title: string;
   description?: string;
   questions: Question[];
   passingScore?: number; 
-  lessonTitle?: string; // Added to store the title of the related lesson
+  lessonTitle?: string; 
 }
 
 export interface Achievement {

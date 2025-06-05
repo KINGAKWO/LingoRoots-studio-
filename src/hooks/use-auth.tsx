@@ -2,11 +2,11 @@
 "use client";
 
 import type { User as FirebaseUser, AuthError } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase/config'; // Added db
-import type { UserProfile } from '@/types';
-import { onAuthStateChanged, signOut as firebaseSignOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail as firebaseSendPasswordResetEmail, updateProfile } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore'; // Added doc, setDoc, serverTimestamp
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { auth, db } from '@/lib/firebase/config';
+import type { UserProfile, UserProgress } from '@/types';
+import { onAuthStateChanged, signOut as firebaseSignOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail as firebaseSendPasswordResetEmail, updateProfile as firebaseUpdateProfile } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp, getDoc, updateDoc } from 'firebase/firestore';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -17,6 +17,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<FirebaseUser | null>;
   signOut: () => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
+  updateUserInContextAndFirestore: (updates: Partial<UserProfile>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,15 +31,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const nameParts = firebaseUser.displayName?.split(" ") || ["", ""];
-        const profile: UserProfile = {
-          ...firebaseUser,
-          id: firebaseUser.uid,
-          firstName: nameParts[0] || '',
-          lastName: nameParts.slice(1).join(" ") || "", // Added lastName inference
-          role: 'learner', 
-        };
-        setUser(profile);
+        const userDocRef = doc(db, "users", firebaseUser.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data() as UserProfile;
+          setUser({
+            ...firebaseUser, // Base Firebase user props
+            id: firebaseUser.uid,
+            firstName: userData.firstName || firebaseUser.displayName?.split(" ")[0] || "",
+            lastName: userData.lastName || firebaseUser.displayName?.split(" ").slice(1).join(" ") || "",
+            email: firebaseUser.email!,
+            role: userData.role || 'learner',
+            progress: userData.progress || { points: 0, completedLessons: [], quizScores: {}, currentStreak: 0, badges: [] },
+            selectedLanguageId: userData.selectedLanguageId,
+            createdAt: userData.createdAt,
+          });
+        } else {
+          // This case should ideally be handled by signup, but as a fallback:
+           const nameParts = firebaseUser.displayName?.split(" ") || ["", ""];
+           const initialProgress: UserProgress = { points: 0, completedLessons: [], quizScores: {}, currentStreak: 0, badges: [] };
+           const newUserProfile: UserProfile = {
+            ...firebaseUser,
+            id: firebaseUser.uid,
+            firstName: nameParts[0] || "",
+            lastName: nameParts.slice(1).join(" ") || "",
+            email: firebaseUser.email!,
+            role: 'learner',
+            progress: initialProgress,
+            createdAt: new Date(), // Using client date, serverTimestamp would be better if creating here
+          };
+          setUser(newUserProfile);
+          // Optionally create the doc here if it's missing, though signup should do it
+          // await setDoc(userDocRef, { email: newUserProfile.email, displayName: newUserProfile.displayName, role: 'learner', createdAt: serverTimestamp(), progress: initialProgress });
+
+        }
       } else {
         setUser(null);
       }
@@ -56,19 +83,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const firebaseUser = userCredential.user;
       if (firebaseUser) {
         const newDisplayName = `${firstName || ''} ${lastName || ''}`.trim();
-        await updateProfile(firebaseUser, {
+        await firebaseUpdateProfile(firebaseUser, {
           displayName: newDisplayName
         });
 
-        // Create user document in Firestore
+        const initialProgress: UserProgress = {
+          points: 0,
+          completedLessons: [],
+          quizScores: {},
+          currentStreak: 0,
+          badges: []
+        };
+
         await setDoc(doc(db, "users", firebaseUser.uid), {
           email: firebaseUser.email,
           displayName: newDisplayName,
-          role: 'learner', // Default role
-          createdAt: serverTimestamp()
+          firstName: firstName || "",
+          lastName: lastName || "",
+          role: 'learner', 
+          createdAt: serverTimestamp(),
+          progress: initialProgress,
+          selectedLanguageId: null, // Initialize selectedLanguageId
         });
       }
-      // onAuthStateChanged will handle setting the user state
       setLoading(false);
       return firebaseUser;
     } catch (e) {
@@ -83,7 +120,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // The onAuthStateChanged listener will pick up the user.
       setLoading(false);
       return userCredential.user;
     } catch (e) {
@@ -98,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     try {
       await firebaseSignOut(auth);
-      setUser(null);
+      setUser(null); // Clear user state immediately
       setLoading(false);
       router.push('/login');
     } catch (e) {
@@ -116,12 +152,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (e) {
       setError(e as AuthError);
       setLoading(false);
-      throw e; // Re-throw to be caught by form
+      throw e; 
     }
   };
 
+  const updateUserInContextAndFirestore = useCallback(async (updates: Partial<UserProfile>) => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const userRef = doc(db, "users", user.id);
+      await updateDoc(userRef, updates);
+      setUser(prevUser => prevUser ? ({ ...prevUser, ...updates }) : null);
+      setLoading(false);
+    } catch (e) {
+      setError(e as AuthError);
+      setLoading(false);
+      console.error("Error updating user profile in Firestore and context:", e);
+    }
+  }, [user]);
+
+
   return (
-    <AuthContext.Provider value={{ user, loading, error, signUp, signIn, signOut, sendPasswordResetEmail }}>
+    <AuthContext.Provider value={{ user, loading, error, signUp, signIn, signOut, sendPasswordResetEmail, updateUserInContextAndFirestore }}>
       {children}
     </AuthContext.Provider>
   );
@@ -134,4 +186,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-

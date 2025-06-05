@@ -4,6 +4,7 @@ import type { Lesson } from "@/types";
 export const mockLessons: Lesson[] = [
   { 
     id: "1", 
+    languageId: "dua", // Added languageId
     title: "Basic Duala Greetings", 
     description: "Learn essential Duala greetings and common phrases for everyday conversations, from 'hello' to 'how are you?' and their responses.", 
     category: "Vocabulary", 
@@ -38,6 +39,7 @@ export const mockLessons: Lesson[] = [
   },
   { 
     id: "2", 
+    languageId: "dua",
     title: "Duala Alphabet and Pronunciation", 
     description: "Master the sounds of Duala, including special characters and tones.", 
     category: "Fundamentals", 
@@ -74,6 +76,7 @@ export const mockLessons: Lesson[] = [
   },
   { 
     id: "3", 
+    languageId: "dua",
     title: "Ordering Food in Duala", 
     description: "Essential phrases for restaurants.", 
     category: "Dialogues", 
@@ -86,6 +89,7 @@ export const mockLessons: Lesson[] = [
   },
   { 
     id: "4", 
+    languageId: "dua",
     title: "Mbia - Family - La famille", 
     description: "Learn Duala terms for family members.", 
     category: "Vocabulary", 
@@ -110,6 +114,7 @@ export const mockLessons: Lesson[] = [
   },
   { 
     id: "5", 
+    languageId: "dua",
     title: "Cultural Etiquette in Cameroon", 
     description: "Understand important cultural norms.", 
     category: "Culture", 
