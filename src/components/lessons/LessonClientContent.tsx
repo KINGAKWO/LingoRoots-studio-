@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { CardContent, Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -13,7 +13,6 @@ import { db } from "@/lib/firebase/config";
 import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-
 
 const getYouTubeEmbedUrl = (videoUrl: string): string => {
   let videoId: string | null = null;
@@ -144,19 +143,19 @@ export default function LessonClientContent({ lesson }: LessonClientContentProps
                         </div>
                         {item.audioUrl && <Button variant="ghost" size="icon"><Volume2 className="h-5 w-5 text-accent"/></Button>}
                       </div>
-                      {item.example && <p className="text-sm text-foreground/80 mt-1"><em>Example: {item.example}</em></p>}\
-                       {item.imageUrl && (\
-                         <div className=\"mt-2 rounded max-h-32 w-32 relative overflow-hidden">\
-                            <Image src={item.imageUrl} alt={item.term} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint || `duala ${item.term.toLowerCase().split(' ')[0]}`}/>\
-                         </div>\
-                        )}\
+                      {item.example && <p className="text-sm text-foreground/80 mt-1"><em>Example: {item.example}</em></p>}
+                       {item.imageUrl && (
+                         <div className="mt-2 rounded max-h-32 w-32 relative overflow-hidden">
+                            <Image src={item.imageUrl} alt={item.term} layout="fill" objectFit="cover" data-ai-hint={item.dataAiHint || `duala ${item.term.toLowerCase().split(' ')[0]}`}/>
+                         </div>
+                        )}
                     </Card>
-                  ))}\
-                </div>\
-              </section>\
-            )}\
+                  ))}
+                </div>
+              </section>
+            )}
 
-            {lesson.dialogues && lesson.dialogues.length > 0 && (\
+            {lesson.dialogues && lesson.dialogues.length > 0 && (
               <section>
                 <Separator className="my-6"/>
                 <h2 className="text-2xl font-semibold mb-3 text-primary/90 font-headline">Dialogues</h2>
@@ -165,14 +164,14 @@ export default function LessonClientContent({ lesson }: LessonClientContentProps
                     <div key={index} className="p-3 border rounded-md bg-card">
                       <p className="font-medium text-sm text-primary">{dialogue.speaker}:</p>
                       <p className="text-foreground/90">{dialogue.line}</p>
-                       {dialogue.audioUrl && <Button variant="ghost" size="sm" className="mt-1 text-accent"><Volume2 className="mr-1 h-4 w-4"/> Listen</Button>}\
+                       {dialogue.audioUrl && <Button variant="ghost" size="sm" className="mt-1 text-accent"><Volume2 className="mr-1 h-4 w-4"/> Listen</Button>}
                     </div>
-                  ))}\
+                  ))}
                 </div>
               </section>
-            )}\
+            )}
 
-            {lesson.culturalTips && (\
+            {lesson.culturalTips && (
               <section>
                 <Separator className="my-6"/>
                 <h2 className="text-2xl font-semibold mb-3 text-primary/90 font-headline flex items-center">
@@ -182,7 +181,7 @@ export default function LessonClientContent({ lesson }: LessonClientContentProps
                   <p className="text-foreground/90 whitespace-pre-line">{lesson.culturalTips}</p>
                 </div>
               </section>
-            )}\
+            )}
           </CardContent>
            {/* --- Mark as Complete Button --- */}
            {!isComplete && (

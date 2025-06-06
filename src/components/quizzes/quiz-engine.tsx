@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Quiz } from "@/types";
@@ -55,9 +54,9 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
     setIsFeedbackLoading(true);
     try {
       const feedbackInput: QuizFeedbackInput = {
-        question: currentQuestion.text, // Updated from questionText
+        question: currentQuestion.text,
         answer: selectedAnswer,
-        correctAnswer: currentQuestion.correctAnswer as string, // Assuming string for now
+        correctAnswer: currentQuestion.correctAnswer as string,
       };
       const aiResult = await quizFeedback(feedbackInput);
       setFeedback(aiResult.feedback);
@@ -70,7 +69,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
     }
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     setSelectedAnswer(null);
     setFeedback(null);
     setAnswerStatus(null);
@@ -86,7 +85,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
         try {
           await updateDoc(userRef, {
             quizScores: {
-              ...(user.progress?.quizScores || {}), // Use existing scores or an empty object
+              ...(user?.progress?.quizScores || {}), // Use existing scores or an empty object
               [quizData.id]: score // Add/update score for this quiz using quizData.id
             },
             points: increment(score), // Add earned points (using current score for simplicity)
@@ -179,7 +178,6 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
             </RadioGroup>
         )}
         {/* TODO: Add rendering for other question types like 'fill-blank', 'matching' */}
-
 
         {answerStatus && (
           <Alert variant={answerStatus === 'correct' ? 'default' : 'destructive'} className={answerStatus === 'correct' ? "bg-green-50 border-green-500 text-green-700" : ""}>

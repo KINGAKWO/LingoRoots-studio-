@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -55,23 +54,11 @@ const profileSchema = z.object({
   path: ["newPassword"],
 });
 
-// Mock data for initial state - will be overwritten by fetched data or defaults
-const mockUserProgress: UserProgress = {
-  points: 0,
-  completedLessons: [],
-  quizScores: {},
-  badges: [],
-  currentStreak: 0,
-};
-
-
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [userProgress, setUserProgress] = useState<UserProgress>(mockUserProgress); 
-  const [progressLoading, setProgressLoading] = useState(true);
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -83,38 +70,6 @@ export default function ProfilePage() {
       confirmNewPassword: "",
     },
   });
-
-  useEffect(() => {
-    const fetchUserProgress = async (currentUser: User) => {
-      setProgressLoading(true);
-      try {
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists() && userDocSnap.data()?.progress) {
-          setUserProgress(userDocSnap.data()?.progress as UserProgress);
-        } else {
-          setUserProgress({ points: 0, completedLessons: [], quizScores: {}, badges: [], currentStreak: 0 });
-        }
-      } catch (error) {
-        console.error("Error fetching user progress:", error);
-        // Keep mockUserProgress or default state on error
-        setUserProgress(mockUserProgress);
-      } finally { setProgressLoading(false); }    };
-    if (user) {
-      const nameParts = user.displayName?.split(" ") || ["", ""];
-      form.reset({
-        firstName: nameParts[0] || "",
-        lastName: nameParts.slice(1).join(" ") || "",
-        email: user.email || "",
-        currentPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
-      });
-      fetchUserProgress(user);
-
-    }
-  }, [user, form]);
 
   const getInitials = (name?: string | null) => {
     if (!name) return "LR";
@@ -280,33 +235,29 @@ export default function ProfilePage() {
           <Separator />
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold tracking-tight text-primary font-headline">Your Progress</h2>
-            {progressLoading ? (
-              <div className="flex justify-center items-center h-24"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <StatsCard
-                  title="Total Points"
-                  value={userProgress.points}
-                  icon={Zap}
-                  description="Points earned from lessons and quizzes."
-                  dataAiHint="progress points"
-                />
-                <StatsCard
-                  title="Lessons Completed"
-                  value={userProgress.completedLessons.length}
-                  icon={CheckCircle2}
-                  description="Keep up the great work!"
-                  dataAiHint="progress lessons"
-                />
-                <StatsCard
-                  title="Current Streak"
-                  value={`${userProgress.currentStreak} days`}
-                  icon={Target}
-                  description="Maintain your learning consistency."
-                  dataAiHint="progress streak"
-                />
-              </div>
-            )}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <StatsCard
+                title="Total Points"
+                value={user?.progress?.points ?? 0}
+                icon={Zap}
+                description="Points earned from lessons and quizzes."
+                dataAiHint="progress points"
+              />
+              <StatsCard
+                title="Lessons Completed"
+                value={user?.progress?.completedLessons?.length ?? 0}
+                icon={CheckCircle2}
+                description="Keep up the great work!"
+                dataAiHint="progress lessons"
+              />
+              <StatsCard
+                title="Current Streak"
+                value={`${user?.progress?.currentStreak ?? 0} days`}
+                icon={Target}
+                description="Maintain your learning consistency."
+                dataAiHint="progress streak"
+              />
+            </div>
             {/* Future: Could add a list of badges earned or recent quiz scores here */}
           </div>
         </>
@@ -314,5 +265,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    
