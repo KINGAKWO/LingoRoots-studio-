@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { User as FirebaseUser, AuthError } from 'firebase/auth';
@@ -31,76 +30,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-// --- Set up real-time listener for user document ---
-    const userDocRef = doc(db, "users", firebaseUser.uid);
-    const unsubscribeFirestore = onSnapshot(userDocRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        const profile: UserProfile = {
-          ...firebaseUser, // Include firebaseUser properties
-          id: firebaseUser.uid,
-          firstName: userData.firstName || '', // Get from Firestore or use default
-          lastName: userData.lastName || '', // Get from Firestore or use default
-          role: userData.role || 'learner', // Get from Firestore or use default
-          selectedLanguageId: userData.selectedLanguageId || undefined, // Get from Firestore
-          createdAt: userData.createdAt?.toDate() || undefined, // Convert Firestore timestamp to Date
-          progress: userData.progress as UserProgress || { // Get progress or use default empty progress
-            completedLessons: [],
-            quizScores: {},
-            badges: [],
-            currentStreak: 0,
-            points: 0,
-          },
-        };
-        setUser(profile);
-      } else {
-        // User document doesn't exist yet, create a basic one
-         setDoc(userDocRef, {
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          role: 'learner', // Default role
-          createdAt: serverTimestamp(),
-          progress: { // Initialize empty progress
-            completedLessons: [],
-            quizScores: {},
-            badges: [],
-            currentStreak: 0,
-            points: 0,
+        // --- Set up real-time listener for user document ---
+        const userDocRef = doc(db, "users", firebaseUser.uid);
+        const unsubscribeFirestore = onSnapshot(userDocRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            const profile: UserProfile = {
+              ...firebaseUser, // Include firebaseUser properties
+              id: firebaseUser.uid,
+              firstName: userData.firstName || '', // Get from Firestore or use default
+              lastName: userData.lastName || '', // Get from Firestore or use default
+              role: userData.role || 'learner', // Get from Firestore or use default
+              selectedLanguageId: userData.selectedLanguageId || undefined, // Get from Firestore
+              createdAt: userData.createdAt?.toDate() || undefined, // Convert Firestore timestamp to Date
+              progress: userData.progress as UserProgress || { // Get progress or use default empty progress
+                completedLessons: [],
+                quizScores: {},
+                badges: [],
+                currentStreak: 0,
+                points: 0,
+              },
+            };
+            setUser(profile);
+          } else {
+            // User document doesn't exist yet, create a basic one
+            setDoc(userDocRef, {
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+              role: 'learner', // Default role
+              createdAt: serverTimestamp(),
+              progress: { // Initialize empty progress
+                completedLessons: [],
+                quizScores: {},
+                badges: [],
+                currentStreak: 0,
+                points: 0,
+              }
+            }).then(() => {
+              console.log("New user document created with initial progress.");
+              // After creating, refetch or let the listener update the state
+            }).catch(error => {
+              console.error("Error creating initial user document:", error);
+            });
+
+            // Set user state with basic info while document is being created
+            const basicProfile: UserProfile = {
+              ...firebaseUser,
+              id: firebaseUser.uid,
+              firstName: firebaseUser.displayName?.split(" ")[0] || '',
+              lastName: firebaseUser.displayName?.split(" ").slice(1).join(" ") || '',
+              role: 'learner',
+              // progress will be added by the listener after creation
+            };
+            setUser(basicProfile);
           }
-        }).then(() => {
-            console.log("New user document created with initial progress.");
-             // After creating, refetch or let the listener update the state
-        }).catch(error => {
-            console.error("Error creating initial user document:", error);
+          setLoading(false); // Set loading to false after first data load
+        }, (error) => {
+          console.error("Error listening to user document:", error);
+          setError(error as AuthError);
+          setLoading(false);
         });
 
-        // Set user state with basic info while document is being created
-         const basicProfile: UserProfile = {
-            ...firebaseUser,
-            id: firebaseUser.uid,
-             firstName: firebaseUser.displayName?.split(" ")[0] || '',
-             lastName: firebaseUser.displayName?.split(" ").slice(1).join(" ") || '',
-             role: 'learner',
-             // progress will be added by the listener after creation
-         };
-         setUser(basicProfile);
-
-
+        // Return unsubscribe function for both auth and firestore listeners
+        return () => {
+          unsubscribeAuth();
+          unsubscribeFirestore();
+        };
+      } else {
+        setUser(null);
+        setLoading(false);
       }
-      setLoading(false); // Set loading to false after first data load
-    }, (error) => {
-      console.error("Error listening to user document:", error);
-      setError(error as AuthError);
-      setLoading(false);
     });
 
-    // Return unsubscribe function for both auth and firestore listeners
-    return () => {
-      unsubscribeAuth();
-      unsubscribeFirestore();
-    };
+    return unsubscribeAuth;
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
     setLoading(true);
@@ -197,7 +202,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error("Error updating user profile in Firestore and context:", e);
     }
   }, [user]);
-
 
   return (
     <AuthContext.Provider value={{ user, loading, error, signUp, signIn, signOut, sendPasswordResetEmail, updateUserInContextAndFirestore }}>
