@@ -5,10 +5,10 @@ import { db } from '@/lib/firebase/config';
 import type { Quiz } from '@/types';
 import { collection, getDocs, doc, getDoc, query, where } from 'firebase/firestore';
 
-export async function getQuizzes(): Promise<Quiz[]> {
+export async function getQuizzes(language: string): Promise<Quiz[]> {
   console.log("Attempting to fetch quizzes from Firestore...");
   try {
-    const quizzesCol = collection(db, 'quizzes');
+    const quizzesCol = collection(db, `languages/${language}/quizzes`);
     // Consider adding an orderBy clause if a specific order is desired, e.g., orderBy('title', 'asc')
     const quizSnapshot = await getDocs(quizzesCol);
      console.log(`Fetched ${quizSnapshot.size} quiz documents.`);
@@ -34,10 +34,10 @@ export async function getQuizzes(): Promise<Quiz[]> {
   }
 }
 
-export async function getQuizById(quizId: string): Promise<Quiz | null> {
+export async function getQuizById(language: string, quizId: string): Promise<Quiz | null> {
   console.log(`Attempting to fetch quiz by ID: ${quizId}`);
   try {
-    const quizRef = doc(db, 'quizzes', quizId);
+    const quizRef = doc(db, `languages/${language}/quizzes`, quizId);
     const quizSnap = await getDoc(quizRef);
     if (quizSnap.exists()) {
       const data = quizSnap.data();
@@ -56,10 +56,10 @@ export async function getQuizById(quizId: string): Promise<Quiz | null> {
   }
 }
 
-export async function getQuizByLessonId(lessonId: string): Promise<Quiz | null> {
+export async function getQuizByLessonId(language: string, lessonId: string): Promise<Quiz | null> {
   console.log(`Attempting to fetch quiz by lessonId: ${lessonId}`);
   try {
-    const quizzesCol = collection(db, 'quizzes');
+    const quizzesCol = collection(db, `languages/${language}/quizzes`);
     const q = query(quizzesCol, where('lessonId', '==', lessonId));
     const quizSnapshot = await getDocs(q);
     if (!quizSnapshot.empty) {

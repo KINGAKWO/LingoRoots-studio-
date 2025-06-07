@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase/config";
 import { doc, updateDoc, increment } from "firebase/firestore";
 
+
 interface QuizEngineProps {
   quizData: Quiz;
 }
@@ -28,6 +29,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
   const [answerStatus, setAnswerStatus] = useState<'correct' | 'incorrect' | null>(null);
+  // Note: QuizEngine receives quizData as a prop, which likely already includes the language context
 
   const { toast } = useToast();
 

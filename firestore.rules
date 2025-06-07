@@ -1,0 +1,12 @@
+firestore
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Existing rules
+
+    // Allow public read access to subcollections under languages/{languageId}
+    match /languages/{languageId}/{collection=**} {
+      allow read: if true;
+    }
+  }
+}
