@@ -3,35 +3,54 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BookOpenText, Clock } from "lucide-react";
+import { BookOpenText, Clock, Loader2 } from "lucide-react"; // Added Loader2
 import { Badge } from "@/components/ui/badge";
 import type { Lesson } from "@/types";
-import { getLessons } from "@/services/lessonService"; // Corrected import
-import { useEffect, useState, useContext } from "react";
-import { LanguageContext } from "@/context/LanguageContext";
+import { getLessons } from "@/services/lessonService";
+import { useEffect, useState } from "react";
 import { useLanguage } from '@/context/LanguageContext';
 
-
 export default function LessonsPage() {
-  const [lessons, setLessons] = useState<Lesson[]>([]); // Corrected call
-  const { selectedLanguageId, setLanguage, setSelectedLanguageId } = useLanguage();
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // Initialize isLoading to true
+  const { selectedLanguageId } = useLanguage();
   
   useEffect(() => {
     const fetchLessons = async () => {
+      console.log(`LessonsPage: useEffect triggered. current selectedLanguageId: ${selectedLanguageId}`);
       if (selectedLanguageId) {
+        setIsLoading(true); 
+        console.log(`LessonsPage: Fetching lessons for language ID: ${selectedLanguageId}`);
         try {
-          const fetchedLessons = await getLessons(selectedLanguageId); // Corrected call
-          setLessons(fetchedLessons); // Corrected import
+          const fetchedLessons = await getLessons(selectedLanguageId);
+          // Log more details about fetched lessons for debugging
+          console.log(`LessonsPage: Fetched ${fetchedLessons.length} lessons. Titles: ${fetchedLessons.map(l => l.title).join(', ')}`);
+          setLessons(fetchedLessons);
         } catch (error) {
-          console.error("Error fetching lessons:", error);
-          setLessons([]);
+          console.error("LessonsPage: Error fetching lessons:", error);
+          setLessons([]); 
+        } finally {
+          setIsLoading(false);
         }
       } else {
+        console.log("LessonsPage: No selectedLanguageId. Clearing lessons and setting isLoading to false.");
         setLessons([]);
+        setIsLoading(false); 
       }
     };
     fetchLessons();
   }, [selectedLanguageId]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">
+          {selectedLanguageId ? `Loading lessons for language: ${selectedLanguageId}...` : "Please select a language to see lessons."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
