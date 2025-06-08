@@ -9,17 +9,19 @@ import type { Lesson } from "@/types";
 import { getLessons } from "@/services/lessonService"; // Corrected import
 import { useEffect, useState, useContext } from "react";
 import { LanguageContext } from "@/context/LanguageContext";
+import { useLanguage } from '@/context/LanguageContext';
+
 
 export default function LessonsPage() {
-  const [lessons, setLessons] = useState<Lesson[]>([]);
-  const { selectedLanguageId } = useContext(LanguageContext);
-
+  const [lessons, setLessons] = useState<Lesson[]>([]); // Corrected call
+  const { selectedLanguageId, setLanguage, setSelectedLanguageId } = useLanguage();
+  
   useEffect(() => {
     const fetchLessons = async () => {
       if (selectedLanguageId) {
         try {
           const fetchedLessons = await getLessons(selectedLanguageId); // Corrected call
-          setLessons(fetchedLessons);
+          setLessons(fetchedLessons); // Corrected import
         } catch (error) {
           console.error("Error fetching lessons:", error);
           setLessons([]);
