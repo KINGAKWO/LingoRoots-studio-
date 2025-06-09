@@ -9,7 +9,10 @@ interface LogoProps {
 
 export function Logo({ className, iconSize = 28, textSize = "text-2xl" }: LogoProps) {
   return (
-    <Link href="/dashboard" className={`flex items-center gap-2 ${className}`}>
+    <Link
+      href="/dashboard"
+      className={`flex items-center gap-2 ${className}`}
+      legacyBehavior>
       <Languages className="text-primary" size={iconSize} data-ai-hint="language learning" />
       <span className={`font-headline font-bold ${textSize} text-primary`}>LingoRoots</span>
     </Link>

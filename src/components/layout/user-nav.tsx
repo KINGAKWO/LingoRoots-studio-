@@ -53,14 +53,14 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href="/profile" passHref>
+          <Link href="/profile" passHref legacyBehavior>
             <DropdownMenuItem>
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </DropdownMenuItem>
           </Link>
-          <Link href="/admin/content-management" passHref>
+          <Link href="/admin/content-management" passHref legacyBehavior>
              <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
               <span>CMS</span>

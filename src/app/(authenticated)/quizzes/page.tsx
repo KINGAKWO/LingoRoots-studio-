@@ -42,7 +42,6 @@ export default function QuizzesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold tracking-tight text-primary font-headline">Quizzes</h1>
       </div>
-
       {isLoading ? (
         <div className="flex justify-center items-center py-10">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -68,7 +67,7 @@ export default function QuizzesPage() {
                   <ListChecks className="mr-1 h-3 w-3" />
                   {quiz.questions.length} Question{quiz.questions.length !== 1 ? 's' : ''}
                 </div>
-                <Link href={`/quizzes/${quiz.id}`} passHref>
+                <Link href={`/quizzes/${quiz.id}`} passHref legacyBehavior>
                   <Button size="sm" variant="default">
                     Start Quiz
                     <HelpCircle className="ml-2 h-4 w-4" />

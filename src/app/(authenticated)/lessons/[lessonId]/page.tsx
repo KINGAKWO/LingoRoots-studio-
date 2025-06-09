@@ -63,14 +63,14 @@ export default function LessonDetailPage() {
         <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
         <h2 className="text-xl font-semibold text-destructive mb-2">Error Loading Lesson</h2>
         <p className="text-muted-foreground mb-6">{error}</p>
-        <Link href="/lessons" passHref>
+        <Link href="/lessons" passHref legacyBehavior>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Lessons
           </Button>
         </Link>
         {!selectedLanguageId && (
-            <Link href="/select-language" passHref>
+            <Link href="/select-language" passHref legacyBehavior>
                 <Button variant="default" className="mt-2">
                     Select Language
                 </Button>
@@ -85,22 +85,25 @@ export default function LessonDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
         <p className="text-muted-foreground">Lesson not found.</p>
-         <Link href="/lessons" passHref>
-          <Button variant="outline" className="mt-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Lessons
-          </Button>
-        </Link>
+        <Link href="/lessons" passHref legacyBehavior>
+         <Button variant="outline" className="mt-4">
+           <ArrowLeft className="mr-2 h-4 w-4" />
+           Back to Lessons
+         </Button>
+       </Link>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto py-8">
-       <Link href="/lessons" className="inline-flex items-center text-sm text-accent hover:underline mb-6 print:hidden">
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to All Lessons
-      </Link>
+      <Link
+        href="/lessons"
+        className="inline-flex items-center text-sm text-accent hover:underline mb-6 print:hidden"
+        legacyBehavior>
+       <ArrowLeft className="mr-2 h-4 w-4" />
+       Back to All Lessons
+     </Link>
       <LessonClientContent lesson={lesson} />
     </div>
   );

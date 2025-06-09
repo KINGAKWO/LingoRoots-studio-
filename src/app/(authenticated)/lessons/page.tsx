@@ -57,7 +57,6 @@ export default function LessonsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold tracking-tight text-primary font-headline">Interactive Lessons</h1>
       </div>
-
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {lessons.length > 0 ? (
           lessons.map((lesson) => (
@@ -83,7 +82,7 @@ export default function LessonsPage() {
                     {lesson.estimatedTimeMinutes} min
                   </div>
                 )}
-                <Link href={`/lessons/${lesson.id}`} passHref>
+                <Link href={`/lessons/${lesson.id}`} passHref legacyBehavior>
                   <Button size="sm" variant="default">
                     Start Lesson
                     <BookOpenText className="ml-2 h-4 w-4" />

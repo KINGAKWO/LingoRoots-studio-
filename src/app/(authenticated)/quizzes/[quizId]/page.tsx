@@ -13,7 +13,7 @@ export default async function QuizPage({ params }: { params: { quizId: string } 
       <div className="text-center py-10">
         <h1 className="text-2xl font-semibold text-destructive mb-4">Quiz Not Found</h1>
         <p className="text-muted-foreground mb-6">The quiz you are looking for does not exist or may have been moved.</p>
-        <Link href="/quizzes" passHref>
+        <Link href="/quizzes" passHref legacyBehavior>
           <Button variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to All Quizzes
@@ -25,10 +25,13 @@ export default async function QuizPage({ params }: { params: { quizId: string } 
 
   return (
     <div className="container mx-auto py-8">
-       <Link href="/quizzes" className="inline-flex items-center text-sm text-accent hover:underline mb-6">
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to All Quizzes
-      </Link>
+      <Link
+        href="/quizzes"
+        className="inline-flex items-center text-sm text-accent hover:underline mb-6"
+        legacyBehavior>
+       <ArrowLeft className="mr-2 h-4 w-4" />
+       Back to All Quizzes
+     </Link>
       <QuizEngine quizData={quizData} />
     </div>
   );
