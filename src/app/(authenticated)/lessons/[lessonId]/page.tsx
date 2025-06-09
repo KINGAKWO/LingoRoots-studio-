@@ -1,13 +1,9 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
+
 import { useParams } from 'next/navigation';
-import { useLanguage } from '@/context/LanguageContext';
-import { getLessonById } from '@/services/lessonService';
-import type { Lesson } from '@/types';
 import LessonClientContent from '@/components/lessons/LessonClientContent';
-import { Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
