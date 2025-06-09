@@ -15,7 +15,7 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 // Define the path to your JSON file
-const contentFilePath = path.resolve(__dirname, './duala_content.json');
+const contentFilePath = path.resolve(__dirname, '../src/data/mock/duala_content.json');
 
 // Define the Firestore collection paths
 const lessonsCollectionPath = 'languages/dua/lessons';
