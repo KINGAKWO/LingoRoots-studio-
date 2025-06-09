@@ -8,21 +8,16 @@ import { getAnalytics, type Analytics } from 'firebase/analytics';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCKX7h5X5ypyot9HUZBLxWRNjOn2T3j-rI",
-  authDomain: "lingoroots-30066.firebaseapp.com",
-  projectId: "lingoroots-30066",
-  storageBucket: "lingoroots-30066.appspot.com", // Corrected storage bucket
-  messagingSenderId: "100987690274",
-  appId: "1:100987690274:web:876393787c77e6f32ad97b"
+  apiKey: "AIzaSyAjMU18Te84wNDtk3dgrGP0t5n_ZyHEJI8",
+  authDomain: "lingoroots.firebaseapp.com",
+  projectId: "lingoroots",
+  storageBucket: "lingoroots.firebasestorage.app",
+  messagingSenderId: "492045873515",
+  appId: "1:492045873515:web:7338c5c284277e1b415c2e"
 };
 
 // Initialize Firebase
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
+const app = initializeApp(firebaseConfig);
 
 // Export Firebase services
 const auth: Auth = getAuth(app);
