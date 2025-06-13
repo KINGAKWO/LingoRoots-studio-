@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
+import useAuth from "@/hooks/use-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -17,14 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Loader2, Edit3, Zap, CheckCircle2, Target } from "lucide-react";
 import { updateProfile, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider, User } from "firebase/auth";
-import { auth, db } from "@/lib/firebase/config"; // Ensure db is imported here
-import { doc, getDoc } from 'firebase/firestore'; // Import doc and getDoc from firestore
+import { auth } from "@/lib/firebase/config";
 import { StatsCard } from "@/components/dashboard/stats-card";
-import type { UserProgress } from "@/types";
 import { Separator } from "@/components/ui/separator";
+import type { UserProgress } from "@/types";
 
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required."),

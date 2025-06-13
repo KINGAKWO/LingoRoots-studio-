@@ -12,7 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/hooks/use-auth";
+import  useAuth  from "@/hooks/use-auth";
 import { LogOut, User, Settings, LifeBuoy, Moon, Sun } from "lucide-react";
 import Link from 'next/link';
 import { useTheme } from "next-themes"; // if you add theme toggling

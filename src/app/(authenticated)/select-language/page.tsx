@@ -9,7 +9,7 @@ import { CheckCircle, Languages, Loader2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
-import { useAuth } from '@/hooks/use-auth'; // Import useAuth
+import  useAuth  from '@/hooks/use-auth'; // Import useAuth
 
 // Mock data - replace with actual data fetching later
 const availableLanguages: Language[] = [

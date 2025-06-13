@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { CheckCircle, Youtube, Volume2, BookOpen, Lightbulb } from "lucide-react";
 import type { Lesson, VocabularyItem, DialogueLine } from "@/types";
-import { useAuth } from "@/hooks/use-auth";
+import  useAuth  from "@/hooks/use-auth";
 import { db } from "@/lib/firebase/config";
 import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";

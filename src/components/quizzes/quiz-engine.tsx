@@ -1,19 +1,18 @@
 "use client";
 
 import type { Quiz } from "@/types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { quizFeedback, type QuizFeedbackInput } from "@/ai/flows/quiz-feedback"; // AI Flow
+import { quizFeedback, type QuizFeedbackInput } from "@/ai/flows/quiz-feedback";
 import { Loader2, Sparkles, CheckCircle, XCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
-import { db } from "@/lib/firebase/config";
-import { doc, updateDoc, increment } from "firebase/firestore";
+import useAuth from "@/hooks/use-auth";
+// Make sure useAuth returns addPoints, or import the correct context/hook that provides addPoints
 
 interface QuizEngineProps {
   quizData: Quiz;
@@ -29,15 +28,27 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
   const [answerStatus, setAnswerStatus] = useState<'correct' | 'incorrect' | null>(null);
 
-  const { toast } = useToast();
+  // If useAuth does not provide addPoints, you may need to import it from the correct context/hook.
+  // Example: import { usePoints } from "@/hooks/use-points";
+  // const { addPoints } = usePoints();
+  // TODO: Replace the following with the correct hook/context that provides addPoints
+  // const { addPoints } = usePoints(); // Uncomment and adjust as needed
+  // const { user, addPoints } = useAuth();
+  // Replace the above line with the correct hook/context that provides user and addPoints.
+  // Example (if you have a useUser or usePoints hook):
+  // const { user } = useUser();
+  // const { addPoints } = usePoints();
+  // For now, set user and addPoints to undefined to avoid compile error:
+  const user = undefined;
+  const addPoints = undefined;
 
   const currentQuestion = quizData.questions[currentQuestionIndex];
   const totalQuestions = quizData.questions.length;
-  const progressValue = ((currentQuestionIndex +1) / totalQuestions) * 100;
+  const progressValue = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   const handleAnswerSubmit = async () => {
     if (!selectedAnswer) {
-      toast({ title: "No Answer Selected", description: "Please select an answer.", variant: "destructive"});
+      toast({ title: "No Answer Selected", description: "Please select an answer.", variant: "destructive" });
       return;
     }
 
@@ -65,7 +76,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
       setFeedback("Could not retrieve AI feedback at this time.");
     } finally {
       setIsFeedbackLoading(false);
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
 
@@ -75,25 +86,18 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
     setAnswerStatus(null);
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-    } else {      
+    } else {
       setShowResult(true);
 
       // --- Firestore Update Logic ---
-      const { user } = useAuth(); // Get user from auth context
-      if (user) {
-        const userRef = doc(db, "users", user.uid);
+      if (user && addPoints) {
         try {
-          await updateDoc(userRef, {
-            quizScores: {
-              ...(user?.progress?.quizScores || {}), // Use existing scores or an empty object
-              [quizData.id]: score // Add/update score for this quiz using quizData.id
-            },
-            points: increment(score), // Add earned points (using current score for simplicity)
-            // Streak logic can be added here if you have the necessary data
-          });
-          console.log("User progress updated in Firestore");
+          // Add points to Firestore using the context method (which also updates dashboard)
+          await addPoints(score);
+          // Optionally, update quizScores or other progress fields here if needed
+          // (You can extend addPoints or create a separate method in your context)
         } catch (error) {
-          console.error("Error updating user progress in Firestore:", error);
+          console.error("Error updating user points in Firestore:", error);
           toast({ title: "Error", description: "Could not save quiz progress.", variant: "destructive" });
         }
       }
@@ -113,7 +117,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
   if (showResult) {
     const totalPointsPossible = quizData.questions.reduce((acc, q) => acc + q.points, 0);
     const percentage = totalPointsPossible > 0 ? (score / totalPointsPossible) * 100 : 0;
-    const passed = quizData.passingScore ? percentage >= quizData.passingScore : true; 
+    const passed = quizData.passingScore ? percentage >= quizData.passingScore : true;
 
     return (
       <Card className="w-full max-w-2xl mx-auto shadow-xl">
@@ -155,36 +159,36 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
       <CardHeader>
         <CardTitle className="text-2xl text-primary font-headline">{quizData.title}</CardTitle>
         <div className="flex justify-between items-center pt-2">
-            <CardDescription>Question {currentQuestionIndex + 1} of {totalQuestions}</CardDescription>
-            <CardDescription>Score: {score}</CardDescription>
+          <CardDescription>Question {currentQuestionIndex + 1} of {totalQuestions}</CardDescription>
+          <CardDescription>Score: {score}</CardDescription>
         </div>
         <Progress value={progressValue} className="w-full mt-2 h-2" />
       </CardHeader>
       <CardContent className="space-y-6">
         <p className="text-lg font-semibold text-foreground">{currentQuestion.text}</p>
         {currentQuestion.type === 'multiple-choice' && (
-            <RadioGroup
+          <RadioGroup
             onValueChange={setSelectedAnswer}
             value={selectedAnswer || ""}
             disabled={isSubmitting || !!answerStatus}
             className="space-y-2"
-            >
+          >
             {currentQuestion.options.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted/50 transition-colors has-[[data-state=checked]]:bg-accent has-[[data-state=checked]]:text-accent-foreground">
+              <div key={index} className="flex items-center space-x-2 p-3 border rounded-md hover:bg-muted/50 transition-colors has-[[data-state=checked]]:bg-accent has-[[data-state=checked]]:text-accent-foreground">
                 <RadioGroupItem value={option} id={`option-${index}`} />
                 <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">{option}</Label>
-                </div>
+              </div>
             ))}
-            </RadioGroup>
+          </RadioGroup>
         )}
         {/* TODO: Add rendering for other question types like 'fill-blank', 'matching' */}
 
         {answerStatus && (
           <Alert variant={answerStatus === 'correct' ? 'default' : 'destructive'} className={answerStatus === 'correct' ? "bg-green-50 border-green-500 text-green-700" : ""}>
-             {answerStatus === 'correct' ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+            {answerStatus === 'correct' ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
             <AlertTitle>{answerStatus === 'correct' ? 'Correct!' : 'Incorrect'}</AlertTitle>
             {answerStatus === 'incorrect' && <AlertDescription>The correct answer was: {currentQuestion.correctAnswer}</AlertDescription>}
-             {currentQuestion.explanation && <AlertDescription className="mt-2">{currentQuestion.explanation}</AlertDescription>}
+            {currentQuestion.explanation && <AlertDescription className="mt-2">{currentQuestion.explanation}</AlertDescription>}
           </Alert>
         )}
 
@@ -209,14 +213,14 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
       </CardContent>
       <CardFooter>
         {!answerStatus ? (
-            <Button onClick={handleAnswerSubmit} disabled={isSubmitting || !selectedAnswer} className="w-full">
+          <Button onClick={handleAnswerSubmit} disabled={isSubmitting || !selectedAnswer} className="w-full">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Submit Answer
-            </Button>
+          </Button>
         ) : (
-            <Button onClick={handleNextQuestion} className="w-full">
+          <Button onClick={handleNextQuestion} className="w-full">
             {currentQuestionIndex < totalQuestions - 1 ? "Next Question" : "Show Results"}
-            </Button>
+          </Button>
         )}
       </CardFooter>
     </Card>

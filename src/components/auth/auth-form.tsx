@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/use-auth";
+import  useAuth  from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,7 @@ const signUpSchema = z.object({
   ...formSchemaBase,
   firstName: z.string().min(1, { message: "First name is required." }),
   lastName: z.string().min(1, { message: "Last name is required." }),
+  role: z.enum(["learner", "contentCreator"], { required_error: "Role is required" }),
 });
 
 const loginSchema = z.object(formSchemaBase);
@@ -55,7 +56,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const form = useForm<CurrentFormValues>({
     resolver: zodResolver(currentSchema),
     defaultValues: mode === 'signup' 
-      ? { email: "", password: "", firstName: "", lastName: "" } 
+      ? { email: "", password: "", firstName: "", lastName: "", role: "learner" } 
       : { email: "", password: "" },
   });
 
@@ -63,8 +64,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     setIsLoading(true);
     try {
       if (mode === "signup") {
-        const { email, password, firstName, lastName } = values as z.infer<typeof signUpSchema>;
-        const user = await signUp(email, password, firstName, lastName);
+        const { email, password, firstName, lastName, role } = values as z.infer<typeof signUpSchema>;
+        const user = await signUp(email, password, firstName, lastName, role);
         if (user) {
           toast({ title: "Account Created", description: "Welcome to LingoRoots!" });
           router.push("/dashboard");
@@ -133,6 +134,23 @@ export function AuthForm({ mode }: AuthFormProps) {
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Your last name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* Role selector for signup */}
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <FormControl>
+                      <select {...field} className="input">
+                        <option value="learner">Learner</option>
+                        <option value="contentCreator">Content Creator</option>
+                      </select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
