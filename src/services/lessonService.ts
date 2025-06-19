@@ -5,11 +5,11 @@ import { db } from '@/lib/firebase/config';
 import type { Lesson } from '@/types';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 
-export async function getLessons(): Promise<Lesson[]> {
-  console.log("Attempting to fetch lessons from Firestore with ordering...");
+export async function getLessons(language: string): Promise<Lesson[]> {
+  console.log(`Attempting to fetch lessons for language: ${language} with ordering...`);
   try {
-    const lessonsCol = collection(db, 'lessons');
-    // Reinstate orderBy - if an index is needed, Firebase should log an error with a link
+    const lessonsCol = collection(db, `languages/${language}/lessons`);
+    // Ensure you have an index for 'order' if needed. Firebase will log an error with a link if an index is missing.
     const q = query(lessonsCol, orderBy('order', 'asc')); 
     const lessonSnapshot = await getDocs(q);
 
@@ -22,7 +22,7 @@ export async function getLessons(): Promise<Lesson[]> {
 
     const lessonList = lessonSnapshot.docs.map(doc => {
       const data = doc.data();
-      console.log(`Mapping lesson document: ID=${doc.id}, Title=${data.title}, Order=${data.order}`);
+      console.log(`Mapping lesson document for language ${language}: ID=${doc.id}, Title=${data.title}, Order=${data.order}`);
       return { id: doc.id, ...data } as Lesson;
     });
 
@@ -37,10 +37,10 @@ export async function getLessons(): Promise<Lesson[]> {
   }
 }
 
-export async function getLessonById(lessonId: string): Promise<Lesson | null> {
-  console.log(`Attempting to fetch lesson by ID: ${lessonId}`);
+export async function getLessonById(language: string, lessonId: string): Promise<Lesson | null> {
+  console.log(`Attempting to fetch lesson for language ${language} by ID: ${lessonId}`);
   try {
-    const lessonRef = doc(db, 'lessons', lessonId);
+    const lessonRef = doc(db, `languages/${language}/lessons`, lessonId);
     const lessonSnap = await getDoc(lessonRef);
     if (lessonSnap.exists()) {
       const data = lessonSnap.data();

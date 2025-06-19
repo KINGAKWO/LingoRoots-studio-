@@ -17,12 +17,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
+const app = initializeApp(firebaseConfig);
 
 // Export Firebase services
 const auth: Auth = getAuth(app);

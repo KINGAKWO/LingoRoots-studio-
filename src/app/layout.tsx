@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/use-auth'; // Will be created
 import { ThemeProvider } from '@/components/theme-provider'; // Optional: for dark mode toggle
+import { LanguageProvider } from '@/context/LanguageContext';
 
 export const metadata: Metadata = {
   title: 'LingoRoots - Learn Duala',
@@ -22,12 +23,14 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
-        <AuthProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </AuthProvider>
+        <LanguageProvider>
+ <AuthProvider>
+ <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+ {children}
+ <Toaster />
+ </ThemeProvider>
+ </AuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

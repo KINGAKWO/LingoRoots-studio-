@@ -14,11 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import useAuth from "@/hooks/use-auth";
 // Make sure useAuth returns addPoints, or import the correct context/hook that provides addPoints
 
-interface QuizEngineProps {
-  quizData: Quiz;
-}
 
-export function QuizEngine({ quizData }: QuizEngineProps) {
+export function QuizEngine() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [score, setScore] = useState(0);
@@ -27,6 +24,10 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
   const [answerStatus, setAnswerStatus] = useState<'correct' | 'incorrect' | null>(null);
+  // Note: QuizEngine receives quizData as a prop, which likely already includes the language context
+  const [fetchedQuizData, setFetchedQuizData] = useState<Quiz | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // If useAuth does not provide addPoints, you may need to import it from the correct context/hook.
   // Example: import { usePoints } from "@/hooks/use-points";
@@ -47,6 +48,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
   const progressValue = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   const handleAnswerSubmit = async () => {
+    if (!fetchedQuizData) return; // Prevent submitting if quiz data is not loaded
     if (!selectedAnswer) {
       toast({ title: "No Answer Selected", description: "Please select an answer.", variant: "destructive" });
       return;
@@ -54,7 +56,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
 
     setIsSubmitting(true);
     const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
-    if (isCorrect) {
+    if (isCorrect && fetchedQuizData) { // Add fetchedQuizData check
       setScore(prevScore => prevScore + currentQuestion.points);
       setAnswerStatus('correct');
     } else {
@@ -65,7 +67,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
     setIsFeedbackLoading(true);
     try {
       const feedbackInput: QuizFeedbackInput = {
-        question: currentQuestion.text,
+        question: currentQuestion.text, // currentQuestion is derived from fetchedQuizData
         answer: selectedAnswer,
         correctAnswer: currentQuestion.correctAnswer as string,
       };
@@ -81,6 +83,7 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
   };
 
   const handleNextQuestion = async () => {
+    if (!fetchedQuizData) return; // Prevent proceeding if quiz data is not loaded
     setSelectedAnswer(null);
     setFeedback(null);
     setAnswerStatus(null);
@@ -113,6 +116,24 @@ export function QuizEngine({ quizData }: QuizEngineProps) {
     setFeedback(null);
     setAnswerStatus(null);
   };
+
+  if (isLoading) {
+    return <Card className="w-full max-w-2xl mx-auto shadow-xl"><CardContent className="pt-6 space-y-6"><p>Loading quiz...</p></CardContent></Card>;
+  }
+
+  if (error) {
+    return <Card className="w-full max-w-2xl mx-auto shadow-xl"><CardContent className="pt-6 space-y-6"><p className="text-destructive">Error: {error}</p></CardContent></Card>;
+  }
+
+  if (!fetchedQuizData) {
+      return <Card className="w-full max-w-2xl mx-auto shadow-xl"><CardContent className="pt-6 space-y-6\"><p className="text-muted-foreground\">Quiz data not available.</p></CardContent></Card>;
+  }
+
+  // Use fetchedQuizData for rendering and logic
+  const quizData = fetchedQuizData; // Assign to a local variable for cleaner code below
+  const currentQuestion = quizData.questions[currentQuestionIndex];
+  const totalQuestions = quizData.questions.length;
+  const progressValue = ((currentQuestionIndex +1) / totalQuestions) * 100;
 
   if (showResult) {
     const totalPointsPossible = quizData.questions.reduce((acc, q) => acc + q.points, 0);

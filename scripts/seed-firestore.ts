@@ -46,35 +46,40 @@ try {
 const db = admin.firestore();
 
 async function seedLessons() {
-  const lessonsCollection = db.collection('lessons');
   console.log('Seeding lessons...');
   for (const lesson of mockLessons) {
+    if (!lesson.languageId) {
+      console.error(`Skipping lesson "${lesson.title}" due to missing languageId.`);
+      continue;
+    }
     try {
-      // Use lesson.id as the document ID
-      // The lesson object from mockLessons already includes languageId
-      await lessonsCollection.doc(lesson.id).set(lesson);
-      console.log(`Added lesson: ${lesson.title} (ID: ${lesson.id}, Language: ${lesson.languageId})`);
+      const lessonDocRef = db.collection('languages').doc(lesson.languageId).collection('lessons').doc(lesson.id);
+      await lessonDocRef.set(lesson);
+      console.log(`Added lesson: ${lesson.title} (ID: ${lesson.id}) to language ${lesson.languageId}`);
     } catch (error) {
-      console.error(`Error adding lesson ${lesson.title}:`, error);
+      console.error(`Error adding lesson ${lesson.title} to language ${lesson.languageId}:`, error);
     }
   }
   console.log('Lessons seeding completed.');
 }
 
 async function seedQuizzes() {
-  const quizzesCollection = db.collection('quizzes');
   console.log('Seeding quizzes...');
   for (const quiz of mockQuizzes) {
     try {
       const lesson = mockLessons.find(l => l.id === quiz.lessonId);
+      if (!lesson || !lesson.languageId) {
+        console.error(`Skipping quiz "${quiz.title}" due to missing lesson or lesson languageId.`);
+        continue;
+      }
       const quizDataWithLessonTitle = {
         ...quiz,
-        lessonTitle: lesson ? lesson.title : "Unknown Lesson",
-        languageId: lesson ? lesson.languageId : "unknown", // Add languageId from lesson
+        lessonTitle: lesson.title, // lesson.title is already present in mockLessons
+        languageId: lesson.languageId,
       };
-      // Use quiz.id as the document ID
-      await quizzesCollection.doc(quiz.id).set(quizDataWithLessonTitle);
-      console.log(`Added quiz: ${quiz.title} (ID: ${quiz.id}) with lesson title: ${quizDataWithLessonTitle.lessonTitle} Language: ${quizDataWithLessonTitle.languageId}`);
+      const quizDocRef = db.collection('languages').doc(lesson.languageId).collection('quizzes').doc(quiz.id);
+      await quizDocRef.set(quizDataWithLessonTitle);
+      console.log(`Added quiz: ${quiz.title} (ID: ${quiz.id}) for lesson: ${quizDataWithLessonTitle.lessonTitle} to language ${lesson.languageId}`);
     } catch (error) {
       console.error(`Error adding quiz ${quiz.title}:`, error);
     }

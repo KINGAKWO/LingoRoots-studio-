@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -7,7 +8,7 @@ const pwaConfig = {
   dest: 'public',
   register: true, // auto register service worker
   skipWaiting: true, // auto skip waiting phase when new SW is activated
-  // disable: process.env.NODE_ENV === 'development', // uncomment to disable PWA in development
+  disable: process.env.NODE_ENV === 'development', // uncomment to disable PWA in development
 };
 
 const withPWA = withPWAConstructor(pwaConfig);

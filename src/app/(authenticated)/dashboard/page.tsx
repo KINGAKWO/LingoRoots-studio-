@@ -55,14 +55,13 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold tracking-tight text-primary font-headline">Your LingoRoots Dashboard</h1>
-        <Link href="/lessons" passHref>
+        <Link href="/lessons" passHref legacyBehavior>
           <Button variant="default" className="bg-accent hover:bg-accent/90 text-accent-foreground">
             <BookOpenText className="mr-2 h-4 w-4" />
             Start New Lesson
           </Button>
         </Link>
       </div>
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Points"
@@ -93,7 +92,6 @@ export default function DashboardPage() {
           dataAiHint="achievement badge"
         />
       </div>
-
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2 shadow-lg">
           <CardHeader>
@@ -116,7 +114,7 @@ export default function DashboardPage() {
                   data-ai-hint={featuredLessonToDisplay.category ? `lesson ${featuredLessonToDisplay.category.toLowerCase()}` : "language lesson"}
                 />
               </div>
-              <Link href={`/lessons/${featuredLessonToDisplay.id}`} passHref>
+              <Link href={`/lessons/${featuredLessonToDisplay.id}`} passHref legacyBehavior>
                 <Button className="w-full sm:w-auto">
                   Start Learning
                 </Button>

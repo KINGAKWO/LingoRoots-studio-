@@ -13,6 +13,7 @@ import { db } from "@/lib/firebase/config";
 import { doc, updateDoc, arrayUnion, increment } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { useParams } from 'next/navigation';
 
 const getYouTubeEmbedUrl = (videoUrl: string): string => {
   let videoId: string | null = null;
