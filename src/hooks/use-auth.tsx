@@ -69,6 +69,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             progress: {
               ...prev.progress,
               points: (prev.progress?.points ?? 0) + amount,
+              completedLessons: prev.progress?.completedLessons ?? [],
+              quizScores: prev.progress?.quizScores ?? {},
+              badges: prev.progress?.badges ?? [],
+              currentStreak: prev.progress?.currentStreak ?? 0,
             },
           }
         : prev

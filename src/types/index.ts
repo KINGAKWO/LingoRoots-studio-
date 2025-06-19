@@ -1,4 +1,3 @@
-
 import type { User as FirebaseUser } from 'firebase/auth';
 
 export interface UserProfile extends FirebaseUser {
@@ -26,6 +25,9 @@ export interface Language {
   imageUrl?: string;
   isActive: boolean;
   lessonCount?: number; 
+  status: 'draft' | 'published'; // <-- added
+  createdBy: string;             // <-- added (user id)
+  validatedBy?: string;          // <-- optional, admin id
 }
 
 export interface VocabularyItem {
@@ -55,6 +57,9 @@ export interface Lesson {
   dialogues?: DialogueLine[];
   culturalTips?: string;
   youtubeVideoUrl?: string;
+  status: 'draft' | 'published'; // <-- added
+  createdBy: string;             // <-- added (user id)
+  validatedBy?: string;          // <-- optional, admin id
 }
 
 export interface Question {
@@ -76,6 +81,9 @@ export interface Quiz {
   questions: Question[];
   passingScore?: number; 
   lessonTitle?: string; 
+  status: 'draft' | 'published'; // <-- added
+  createdBy: string;             // <-- added (user id)
+  validatedBy?: string;          // <-- optional, admin id
 }
 
 export interface Achievement {

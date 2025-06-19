@@ -1,33 +1,91 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Users } from "lucide-react";
-import type { UserProfile } from "@/types";
+import { PlusCircle, Users, Pencil } from "lucide-react";
+// Define the AdminLanguage type locally to avoid conflicts with other types
+type AdminLanguage = {
+	id: string;
+	name: string;
+	description: string;
+	imageUrl?: string;
+	isActive: boolean;
+	lessonCount: number;
+	status: "published" | "draft";
+	createdBy: string;
+};
+// import type { Language } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 // Mock data - replace with actual data fetching later
-const languages: UserProfile[] = [
+const initialLanguages: AdminLanguage[] = [
 	{
 		id: "dua",
 		name: "Duala",
 		description: "A Bantu language spoken in Cameroon.",
-		imageUrl: "src/public/history-colonial-cameroon.jpeg",
+		imageUrl: "/history-colonial-cameroon.jpg",
 		isActive: true,
 		lessonCount: 5,
+		status: "published",
+		createdBy: "admin",
 	},
 	{
 		id: "ewo",
 		name: "Ewondo",
 		description: "Another Bantu language from Cameroon.",
-		imageUrl: "https://placehold.co/50x50.png",
+		imageUrl: "/history-colonial-cameroon.jpg",
 		isActive: false,
 		lessonCount: 0,
+		status: "draft",
+		createdBy: "admin",
 	},
 ];
 
 export default function LanguageManagementPage() {
+	const [languages, setLanguages] = useState<AdminLanguage[]>(initialLanguages);
+	const [modalOpen, setModalOpen] = useState(false);
+	const [editing, setEditing] = useState<AdminLanguage | null>(null);
+	const [form, setForm] = useState<Partial<AdminLanguage>>({});
+
+	const openAddModal = () => {
+		setEditing(null);
+		setForm({});
+		setModalOpen(true);
+	};
+
+	const openEditModal = (lang: AdminLanguage) => {
+		setEditing(lang);
+		setForm(lang);
+		setModalOpen(true);
+	};
+
+	const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setForm({ ...form, [e.target.name]: e.target.value });
+	};
+
+	const handleSave = () => {
+		if (editing) {
+			setLanguages(languages.map((l) => (l.id === editing.id ? { ...editing, ...form } as AdminLanguage : l)));
+		} else {
+			setLanguages([
+				...languages,
+				{
+					...(form as AdminLanguage),
+					id: form.id || Date.now().toString(),
+					isActive: false,
+					lessonCount: 0,
+					status: "draft",
+					createdBy: "admin",
+				},
+			]);
+		}
+		setModalOpen(false);
+	};
+
 	return (
 		<ProtectedRoute allowedRoles={["admin"]}>
 			<div className="space-y-6">
@@ -35,7 +93,7 @@ export default function LanguageManagementPage() {
 					<h1 className="text-3xl font-bold tracking-tight text-primary font-headline">
 						Language Management
 					</h1>
-					<Button size="sm" variant="default" className="gap-1">
+					<Button size="sm" variant="default" className="gap-1" onClick={openAddModal}>
 						<PlusCircle size={16} /> Add New Language
 					</Button>
 				</div>
@@ -102,8 +160,9 @@ export default function LanguageManagementPage() {
 														variant="link"
 														size="sm"
 														className="text-accent p-0 h-auto"
+														onClick={() => openEditModal(lang)}
 													>
-														Edit
+														<Pencil className="mr-1 h-4 w-4" /> Edit
 													</Button>
 												</td>
 											</tr>
@@ -129,6 +188,57 @@ export default function LanguageManagementPage() {
 						)}
 					</CardContent>
 				</Card>
+
+				<Dialog open={modalOpen} onOpenChange={setModalOpen}>
+					<DialogContent className="sm:max-w-[425px]">
+						<DialogHeader>
+							<DialogTitle>
+								{editing ? "Edit Language" : "Add New Language"}
+							</DialogTitle>
+							<DialogDescription>
+								{editing
+									? "Modify the details of the language."
+									: "Provide the details for the new language."}
+							</DialogDescription>
+						</DialogHeader>
+						<div className="grid gap-4 py-4">
+							<Input
+								name="name"
+								placeholder="Enter language name"
+								value={form.name}
+								onChange={handleFormChange}
+							/>
+							<Input
+								name="id"
+								placeholder="Enter language ID"
+								value={form.id}
+								onChange={handleFormChange}
+							/>
+							<Input
+								name="description"
+								placeholder="Enter language description"
+								value={form.description}
+								onChange={handleFormChange}
+							/>
+							<div className="flex gap-4">
+								<Button
+									variant="default"
+									className="flex-1"
+									onClick={handleSave}
+								>
+									Save
+								</Button>
+								<Button
+									variant="outline"
+									className="flex-1"
+									onClick={() => setModalOpen(false)}
+								>
+									Cancel
+								</Button>
+							</div>
+						</div>
+					</DialogContent>
+				</Dialog>
 			</div>
 		</ProtectedRoute>
 	);
