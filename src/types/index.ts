@@ -1,33 +1,35 @@
+
+// Unified types for the app
 import type { User as FirebaseUser } from 'firebase/auth';
 
 export interface UserProfile extends FirebaseUser {
   id: string;
   firstName?: string;
   lastName?: string;
-  progress?: UserProgress; 
+  progress?: UserProgress;
   role?: 'learner' | 'contentCreator' | 'admin';
   selectedLanguageId?: string;
-  createdAt?: Date; 
+  createdAt?: Date;
 }
 
 export interface UserProgress {
-  completedLessons: string[]; 
-  quizScores: Record<string, number>; // quizId: score
-  badges: string[]; 
+  completedLessons: string[];
+  quizScores: Record<string, number>;
+  badges: string[];
   currentStreak: number;
   points: number;
 }
 
 export interface Language {
-  id: string; 
+  id: string;
   name: string;
   description?: string;
   imageUrl?: string;
   isActive: boolean;
-  lessonCount?: number; 
-  status: 'draft' | 'published'; // <-- added
-  createdBy: string;             // <-- added (user id)
-  validatedBy?: string;          // <-- optional, admin id
+  lessonCount?: number;
+  status: 'draft' | 'published';
+  createdBy: string;
+  validatedBy?: string;
 }
 
 export interface VocabularyItem {
@@ -36,7 +38,7 @@ export interface VocabularyItem {
   example?: string;
   imageUrl?: string;
   audioUrl?: string;
-  dataAiHint?: string; 
+  dataAiHint?: string;
 }
 
 export interface DialogueLine {
@@ -47,19 +49,19 @@ export interface DialogueLine {
 
 export interface Lesson {
   id: string;
-  languageId: string; 
+  languageId: string;
   title: string;
   description?: string;
-  category?: string; 
-  order: number; 
-  estimatedTimeMinutes?: number; 
+  category?: string;
+  order: number;
+  estimatedTimeMinutes?: number;
   vocabulary?: VocabularyItem[];
   dialogues?: DialogueLine[];
   culturalTips?: string;
   youtubeVideoUrl?: string;
-  status: 'draft' | 'published'; // <-- added
-  createdBy: string;             // <-- added (user id)
-  validatedBy?: string;          // <-- optional, admin id
+  status: 'draft' | 'published';
+  createdBy: string;
+  validatedBy?: string;
 }
 
 export interface Question {

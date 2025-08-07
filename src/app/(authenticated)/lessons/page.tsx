@@ -7,39 +7,23 @@ import { BookOpenText, Clock, Loader2 } from "lucide-react"; // Added Loader2
 import { Badge } from "@/components/ui/badge";
 import type { Lesson } from "@/types";
 import { getLessons } from "@/services/lessonService";
-import { useEffect, useState } from "react";
 import { useLanguage } from '@/context/LanguageContext';
+import { useQuery } from '@tanstack/react-query';
+
 
 export default function LessonsPage() {
-  const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // Initialize isLoading to true
   const { selectedLanguageId } = useLanguage();
-  
-  useEffect(() => {
-    const fetchLessons = async () => {
-      console.log(`LessonsPage: useEffect triggered. current selectedLanguageId: ${selectedLanguageId}`);
-      if (selectedLanguageId) {
-        setIsLoading(true); 
-        console.log(`LessonsPage: Fetching lessons for language ID: ${selectedLanguageId}`);
-        try {
-          const fetchedLessons = await getLessons(selectedLanguageId);
-          // Log more details about fetched lessons for debugging
-          console.log(`LessonsPage: Fetched ${fetchedLessons.length} lessons. Titles: ${fetchedLessons.map(l => l.title).join(', ')}`);
-          setLessons(fetchedLessons);
-        } catch (error) {
-          console.error("LessonsPage: Error fetching lessons:", error);
-          setLessons([]); 
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
-        console.log("LessonsPage: No selectedLanguageId. Clearing lessons and setting isLoading to false.");
-        setLessons([]);
-        setIsLoading(false); 
-      }
-    };
-    fetchLessons();
-  }, [selectedLanguageId]);
+  const {
+    data: lessons = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["lessons", selectedLanguageId],
+    queryFn: () => selectedLanguageId ? getLessons(selectedLanguageId) : Promise.resolve([]),
+    enabled: !!selectedLanguageId,
+  });
 
   if (isLoading) {
     return (
@@ -48,6 +32,15 @@ export default function LessonsPage() {
         <p className="mt-4 text-muted-foreground">
           {selectedLanguageId ? `Loading lessons for language: ${selectedLanguageId}...` : "Please select a language to see lessons."}
         </p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
+        <p className="text-destructive">Error loading lessons: {error instanceof Error ? error.message : 'Unknown error'}</p>
+        <button className="mt-4 btn" onClick={() => refetch()}>Retry</button>
       </div>
     );
   }

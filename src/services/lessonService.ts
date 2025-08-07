@@ -26,19 +26,14 @@ export async function getLessonById(language: string, lessonId: string): Promise
   try {
     const lessonRef = doc(db, `languages/${language}/lessons/${lessonId}`);
     const lessonSnapshot = await getDoc(lessonRef);
-
     if (!lessonSnapshot.exists()) {
       console.error(`Lesson not found: ${lessonId}`);
       return null;
     }
-
     const lessonData = lessonSnapshot.data();
     return { id: lessonSnapshot.id, ...lessonData } as Lesson;
   } catch (error: any) {
-    console.error("Error fetching lesson from Firestore:");
-    console.error("Code:", error.code);
-    console.error("Message:", error.message);
-    console.error("Full error object:", error);
+    console.error('Error fetching lesson from Firestore:', error);
     return null;
   }
 }

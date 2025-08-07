@@ -27,7 +27,6 @@ export function AppSidebarNav({ items, onLinkClick }: AppSidebarNavProps) {
       {items.map((item, index) => {
         const Icon = item.icon;
         const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/dashboard");
-        
         return item.href ? (
           <SidebarMenuItem key={index}>
             <Link href={item.href} legacyBehavior passHref>
@@ -42,15 +41,15 @@ export function AppSidebarNav({ items, onLinkClick }: AppSidebarNavProps) {
                   item.disabled && "cursor-not-allowed opacity-80"
                 )}
                 onClick={onLinkClick}
-                tooltip={item.title} // Tooltip for collapsed state
+                tooltip={item.title}
               >
-                <a>
+                <span>
                   <Icon className="mr-2 h-4 w-4" />
                   <span>{item.title}</span>
                   {item.label && (
                     <span className="ml-auto text-xs">{item.label}</span>
                   )}
-                </a>
+                </span>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
