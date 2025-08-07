@@ -7,7 +7,7 @@ import { VariantProps, cva } from "class-variance-authority"
 import { Menu } from "lucide-react" // Changed from PanelLeft to Menu
 
 import { useIsMobile } from "@/hooks/use-mobile"
-import { cn } from "@/lib/utils"
+import { cn } from "@/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
