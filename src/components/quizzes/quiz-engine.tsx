@@ -43,9 +43,7 @@ export function QuizEngine() {
   const user = undefined;
   const addPoints = undefined;
 
-  const currentQuestion = quizData.questions[currentQuestionIndex];
-  const totalQuestions = quizData.questions.length;
-  const progressValue = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+  // Remove duplicate currentQuestion, totalQuestions, progressValue declarations here
 
   const handleAnswerSubmit = async () => {
     if (!fetchedQuizData) return; // Prevent submitting if quiz data is not loaded
@@ -133,7 +131,7 @@ export function QuizEngine() {
   const quizData = fetchedQuizData; // Assign to a local variable for cleaner code below
   const currentQuestion = quizData.questions[currentQuestionIndex];
   const totalQuestions = quizData.questions.length;
-  const progressValue = ((currentQuestionIndex +1) / totalQuestions) * 100;
+  const progressValue = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
   if (showResult) {
     const totalPointsPossible = quizData.questions.reduce((acc, q) => acc + q.points, 0);

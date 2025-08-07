@@ -1,4 +1,5 @@
 
+"use client";
 import { useState, useEffect } from 'react';
 import useAuth from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
