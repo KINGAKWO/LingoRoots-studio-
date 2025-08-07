@@ -24,12 +24,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
         <LanguageProvider>
- <AuthProvider>
- <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
- {children}
- <Toaster />
- </ThemeProvider>
- </AuthProvider>
+          <AuthProvider>
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+              {children}
+              <Toaster />
+            </ThemeProvider>
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

@@ -1,5 +1,5 @@
 
-import type { Lesson } from "@/types";
+/*import type { Lesson } from "@/types";
 
 export const mockLessons: Lesson[] = [
   { 
@@ -123,3 +123,4 @@ export const mockLessons: Lesson[] = [
     culturalTips: "Greetings are very important. Always greet elders first. When visiting someone's home, it's customary to bring a small gift. Handshakes are common, but maintain eye contact respectfully, especially with elders. Pointing with an index finger can be considered rude."
   },
 ];
+*/

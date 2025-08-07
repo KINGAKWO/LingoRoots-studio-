@@ -1,31 +1,31 @@
-"use client";
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { AppSidebarNav } from "./app-sidebar-nav";
-import { mainNavItems, adminNavItems, userNavItems } from "@/config/nav";
-import { Logo } from "../logo";
-import { Button } from "../ui/button";
-import { LogOut } from "lucide-react";
-import useAuth from "@/hooks/use-auth";
-import { Separator } from "../ui/separator";
+import type { NavItem } from '@/types';
+import useAuth from '@/hooks/use-auth';
+import { useSidebar } from '@/components/ui/sidebar';
+import { Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarGroup } from '@/components/ui/sidebar';
+import { AppSidebarNav } from './app-sidebar-nav';
+import { mainNavItems, adminNavItems, userNavItems } from '@/config/nav';
+import { Logo } from '../logo';
+import { Button } from '../ui/button';
+import { LogOut } from 'lucide-react';
+import { Separator } from '../ui/separator';
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  navItems: NavItem[];
+  onLinkClick: () => void;
+}
+
+export function AppSidebar({ navItems, onLinkClick }: AppSidebarProps) {
   const { signOut, user } = useAuth();
   const { setOpenMobile } = useSidebar();
 
   // Only admins and content creators see the admin section
-  const canAccessAdmin = user?.role === "admin" || user?.role === "contentCreator";
+  const canAccessAdmin = user?.role === 'admin' || user?.role === 'contentCreator';
 
   const handleLinkClick = () => {
     if (window.innerWidth < 768) {
       setOpenMobile(false);
     }
+    onLinkClick();
   };
 
   return (
@@ -35,7 +35,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="flex-1 p-0">
         <SidebarGroup className="p-2">
-          <AppSidebarNav items={mainNavItems} onLinkClick={handleLinkClick} />
+          <AppSidebarNav items={navItems} onLinkClick={handleLinkClick} />
         </SidebarGroup>
         {canAccessAdmin && (
           <>
@@ -56,13 +56,4 @@ export function AppSidebar() {
       </SidebarFooter>
     </Sidebar>
   );
-}
-
-export default function ContentManagementPage() {
-  const { user } = useAuth();
-  if (!user || (user.role !== "admin" && user.role !== "contentCreator")) {
-    return <p className="p-8 text-center text-destructive">Access denied.</p>;
-  }
-
-  return <div>/* Your content management page code here */</div>;
 }
